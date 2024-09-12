@@ -1,5 +1,5 @@
 import { Navigate, Outlet, Route, Routes } from "react-router-dom";
-import { Login, NotFound, Settings, Token, Workspace } from "@/pages";
+import { Login, NotFound, Token, Workspace } from "@/pages";
 import { Layout } from "./components/layout";
 import { AuthContext } from "./hooks/use-auth";
 import { useContext } from "react";
@@ -31,7 +31,7 @@ export default function Router() {
 								<>
 									<Route key={`${route.href}`} path={route.href} element={
 										<>
-											<div className="mx-auto grid w-full  max-w-7xl gap-2">
+											<div className="mx-auto grid w-full  gap-2">
 												<h1 className="text-3xl font-semibold">{route.title}</h1>
 											</div>
 											{route.element}
