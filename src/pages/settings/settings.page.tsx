@@ -1,6 +1,6 @@
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { UserSettings } from "./user.settings";
+import { UserSettings } from "./users/user.settings";
 import { PermissionsSettings } from "./permissions.settings";
 import { LogsSettings } from "./logs.settings";
 import { ProfileSettings } from "./profile.settings";
@@ -21,8 +21,8 @@ export function Settings() {
                 <TabsList  >
                     <TabsTrigger value="company">Empresa</TabsTrigger>
                     <TabsTrigger value="users">Usuários</TabsTrigger>
-                    <TabsTrigger value="permissions">Permissões</TabsTrigger>
-                    <TabsTrigger value="logs">Registros</TabsTrigger>
+                    {/* <TabsTrigger value="permissions">Permissões</TabsTrigger> */}
+                    {/* <TabsTrigger value="logs">Registros</TabsTrigger> */}
                     <TabsTrigger value="profile">Perfil</TabsTrigger>
                 </TabsList>
                 <TabsContent value="company" >
