@@ -1,11 +1,11 @@
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { CompanySettings } from "./company.settings copy";
 import { UserSettings } from "./user.settings";
 import { PermissionsSettings } from "./permissions.settings";
 import { LogsSettings } from "./logs.settings";
 import { ProfileSettings } from "./profile.settings";
 import { useSearchParams } from "react-router-dom";
+import { CompanySettings } from "./company.settings";
 
 export function Settings() {
     const [params, setSearchParams] = useSearchParams()
