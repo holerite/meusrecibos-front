@@ -74,15 +74,17 @@ type Routes = {
 type IAuthContextData = {
 	signOut: () => void;
 	signIn: () => void;
-	user: User | null;
+	user?: User | null;
 	routes: Routes[];
+	loading: boolean
 }
 
 export const AuthContext = createContext({} as IAuthContextData);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-	const [user, setUser] = useState<User | null>(null);
+	const [user, setUser] = useState<User | null>();
 	const [routes, setRoutes] = useState<Routes[]>([]);
+	const [loading, setLoading] = useState(true)
 
 	const navigate = useNavigate()
 
@@ -99,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
 	async function signOut() {
-		setUser({} as User);
+		setUser(null);
 		setRoutes([]);
 		localStorage.removeItem('@acme:user');
 		localStorage.removeItem('@acme:token');
@@ -123,12 +125,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		if (user && token) {
 			setUser(JSON.parse(user));
 			handleRoutes(JSON.parse(user));
-		}
+			return
+		} 
+
+		setUser(null)
+
 	}, [])
+
+	useEffect(() => {
+		setLoading(false)
+	}, [user])
 
 	return (
 		<AuthContext.Provider value={{
-			signIn, signOut, user, routes
+			signIn, signOut, user, routes, loading
 		}}>
 			<>
 				{children}
