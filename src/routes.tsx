@@ -9,7 +9,7 @@ export default function Router() {
 	const { user, routes } = useContext(AuthContext);
 	return (
 		<Routes>
-			{user?.id === undefined ? (
+			{(user?.id === undefined || user === null) ? (
 				<>
 					<Route path="/" element={<Login />} />
 					<Route path="/verify" element={<Token />} />

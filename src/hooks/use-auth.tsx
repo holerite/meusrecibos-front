@@ -131,11 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			signIn, signOut, user, routes
 		}}>
 			<>
-				{user === null ? <h1>Carregando...</h1> : (
-					<>
-						{children}
-					</>
-				)}
+				{children}
 			</>
 		</AuthContext.Provider>
 	);
