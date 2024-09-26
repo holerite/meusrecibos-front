@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/c
 import {
 	Form,
 	FormControl,
-	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -15,6 +14,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp";
 import { useNavigate } from "react-router-dom";
+import { Loader2Icon } from "lucide-react";
+import { api } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
 	pin: z.string().min(6, {
@@ -24,7 +26,7 @@ const formSchema = z.object({
 
 export function Token() {
 	const navigate = useNavigate();
-
+    const { toast } = useToast();
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -34,12 +36,21 @@ export function Token() {
 	});
 
 	// 2. Define a submit handler.
-	function onSubmit(values: z.infer<typeof formSchema>) {
-		// Do something with the form values.
-		// ✅ This will be type-safe and validated.
-		console.log(values);
-		navigate("/workspace");
-
+	async function onSubmit(values: z.infer<typeof formSchema>) {
+		try {
+            const { data } = await api.post("/auth/signIn", values);
+            toast({
+                title: "Login efetuado com sucesso",
+            });
+            localStorage.setItem("meusrecibos:companies", JSON.stringify(data.companies));
+            navigate("/workspace");
+        } catch (error: any) {
+            toast({
+                variant: "destructive",
+                title: "Erro ao realizar login",
+                description: error.response?.data?.message || "Tente novamente mais tarde",
+            })
+        }
 	}
 
 	return (
@@ -78,9 +89,13 @@ export function Token() {
 									</FormItem>
 								)}
 							/>
-							<Button type="submit" className="w-full">
-								Entrar
-							</Button>
+							<Button
+                                type="submit"
+                                className="w-full"
+                                disabled={form.formState.isSubmitting}
+                            >
+                                {form.formState.isSubmitting ? <Loader2Icon className="animate-spin" size={18} /> : "Entrar"}
+                            </Button>
 						</form>
 					</Form>
 				</CardContent>

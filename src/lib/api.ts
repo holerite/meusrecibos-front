@@ -1,6 +1,6 @@
-import axios from 'axios'
+import axios from "axios";
 
 export const api = axios.create({
-    baseURL: 'https://some-domain.com/api/',
-    headers: {'X-Custom-Header': 'foobar'}
-  });
+    baseURL: import.meta.env.VITE_API_URL,
+    headers: { "X-Custom-Header": "foobar" },
+});
