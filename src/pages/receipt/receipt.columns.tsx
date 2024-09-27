@@ -1,10 +1,8 @@
-"use client"
-
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import type { ColumnDef } from "@tanstack/react-table"
 import { format } from 'date-fns'
-import { Eye, Mail, MailIcon, MailOpen, MailOpenIcon } from "lucide-react"
+import { Eye, MailIcon, MailOpenIcon } from "lucide-react"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -72,12 +70,20 @@ export const columns: ColumnDef<Payment>[] = [
         header: () => (
             <Eye className="w-5 h-5" />
         ),
-        cell: ({ row }) => (
-            <>
-                {row.original.opened ? <MailOpenIcon className="w-5 h-5  text-gray-400" /> : <MailIcon className="w-5 h-5" />}
-            </>
-        ),
+        cell: ({ table, row }) => {
+            const handlePrint = () => {
+                (table.options.meta as any)?.onPrint([row.original.id])
+            }
+
+            return (
+                <button onClick={handlePrint}>
+                    {row.original.opened ? <MailOpenIcon className="w-5 h-5  text-gray-400" /> : <MailIcon className="w-5 h-5" />}
+                </button>
+            )
+        },
         enableSorting: false,
         enableHiding: false,
+        
     },
 ]
+
