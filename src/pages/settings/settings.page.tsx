@@ -17,13 +17,13 @@ export function Settings() {
     return (
         <>
 
-            <Tabs defaultValue={params.get("tab") || "company"} onValueChange={(e) => handleTabChange(e)}>
+            <Tabs defaultValue={params.get("tab") || "users"} onValueChange={(e) => handleTabChange(e)}>
                 <TabsList  >
-                    <TabsTrigger value="company">Empresa</TabsTrigger>
+                    {/* <TabsTrigger value="company">Empresa</TabsTrigger> */}
                     <TabsTrigger value="users">Usuários</TabsTrigger>
                     {/* <TabsTrigger value="permissions">Permissões</TabsTrigger> */}
                     {/* <TabsTrigger value="logs">Registros</TabsTrigger> */}
-                    <TabsTrigger value="profile">Perfil</TabsTrigger>
+                    {/* <TabsTrigger value="profile">Perfil</TabsTrigger> */}
                 </TabsList>
                 <TabsContent value="company" >
                     <CompanySettings />

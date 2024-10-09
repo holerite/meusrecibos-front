@@ -33,6 +33,30 @@ import { cn } from "@/lib/utils";
 import { format, subDays } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import { useSearchParams } from "react-router-dom";
+
+const TypeOptions = [
+	{
+		label: "13° Integral",
+		type: 1,
+	},
+	{
+		label: "13° Adiantado",
+		type: 2,
+	},
+	{
+		label: "Cartão de Ponto",
+		type: 3,
+	},
+	{
+		label: "Energia / Office",
+		type: 4,
+	},
+	{
+		label: "Férias",
+		type: 5,
+	},
+];
 
 async function getData(): Promise<Payment[]> {
 	await new Promise((resolve) =>
@@ -58,7 +82,7 @@ async function getData(): Promise<Payment[]> {
 
 const filterSchema = z.object({
 	employee: z.string(),
-	type: z.string(),
+	type: z.number(),
 	payday: z.object({
 		from: z.date(),
 		to: z.date(),
@@ -68,6 +92,7 @@ const filterSchema = z.object({
 });
 
 export function Receipt() {
+	const [searchParams] = useSearchParams()
 	const { data, isLoading } = useQuery({
 		queryKey: ["todos"],
 		queryFn: getData,
@@ -76,8 +101,8 @@ export function Receipt() {
 	const form = useForm<z.infer<typeof filterSchema>>({
 		resolver: zodResolver(filterSchema),
 		defaultValues: {
-			employee: "",
-			type: "",
+			employee: searchParams.get("employee") || "",
+			type: searchParams.get("type") || "",
 			payday: {
 				from: new Date(),
 				to: subDays(new Date(), 30),
@@ -93,18 +118,20 @@ export function Receipt() {
 
 	return (
 		<>
-			<div>
-				<h1>Filtro</h1>
-				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+			<Form {...form}>
+				<form
+					onSubmit={form.handleSubmit(onSubmit)}
+					className=" flex items-center gap-4 border p-4 rounded-md"
+				>
+					<div className="flex h-full w-full gap-4 items-end">
 						<FormField
 							control={form.control}
 							name="employee"
 							render={({ field }) => (
-								<FormItem>
+								<FormItem className="w-[240px]">
 									<FormLabel>Colaborador</FormLabel>
 									<FormControl>
-										<Input placeholder="Nome do colaborador..." {...field} />
+										<Input placeholder="Nome do colaborador" {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -114,25 +141,25 @@ export function Receipt() {
 							control={form.control}
 							name="type"
 							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Email</FormLabel>
+								<FormItem className="w-[240px]">
+									<FormLabel>Descrição</FormLabel>
 									<Select
 										onValueChange={field.onChange}
-										defaultValue={field.value}
+										defaultValue={String(field.value)}
 									>
 										<FormControl>
 											<SelectTrigger>
-												<SelectValue placeholder="Select a verified email to display" />
+												<SelectValue placeholder="Todos" />
 											</SelectTrigger>
 										</FormControl>
 										<SelectContent>
-											<SelectItem value="m@example.com">
-												m@example.com
-											</SelectItem>
-											<SelectItem value="m@google.com">m@google.com</SelectItem>
-											<SelectItem value="m@support.com">
-												m@support.com
-											</SelectItem>
+											{TypeOptions.map((option) => {
+												return (
+													<SelectItem value={String(option.type)} key={option.type}>
+														{option.label}
+													</SelectItem>
+												);
+											})}
 										</SelectContent>
 									</Select>
 									<FormMessage />
@@ -144,7 +171,7 @@ export function Receipt() {
 							name="payday"
 							render={({ field }) => (
 								<FormItem className="flex flex-col">
-									<FormLabel>Date of birth</FormLabel>
+									<FormLabel>Data de pagamento</FormLabel>
 									<div className={cn("grid gap-2")}>
 										<Popover>
 											<PopoverTrigger asChild>
@@ -152,7 +179,7 @@ export function Receipt() {
 													id="date"
 													variant={"outline"}
 													className={cn(
-														"w-[300px] justify-start text-left font-normal",
+														"w-[240px] justify-start text-left font-normal",
 														!field.value && "text-muted-foreground",
 													)}
 												>
@@ -186,12 +213,12 @@ export function Receipt() {
 								</FormItem>
 							)}
 						/>
-						<Button type="submit" className="w-full">
-							Continuar
-						</Button>
-					</form>
-				</Form>
-			</div>
+					</div>
+					<Button type="submit" className="w-40">
+						Filtrar
+					</Button>
+				</form>
+			</Form>
 			<DataTable columns={columns} loading={isLoading} data={data || []} />
 		</>
 	);

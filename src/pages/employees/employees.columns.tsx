@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, } from "lucide-react"
+import { Link } from "react-router-dom"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -38,6 +39,9 @@ export const columns: ColumnDef<EmployeesDto>[] = [
     {
         accessorKey: "receipts",
         header: "Recibos",
+        cell: ({cell, row}) => {
+            return <Link to={`/receipt?employee=${row.getValue("name")}`} className="underline">{cell.getValue() as number}</Link>
+        }
     },
 
 

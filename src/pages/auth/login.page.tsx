@@ -37,7 +37,7 @@ export function Login() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             const { data } = await api.post("/auth/login", values);
-            api.defaults.headers["Authorization"] = `Bearer ${data.token}`;
+            api.defaults.headers.Authorization = `Bearer ${data.token}`;
             toast({
                 title: "Código de verificação enviado",
                 description: "Enviamos um email com um código de verificação. Por favor verifique sua caixa de entrada.",

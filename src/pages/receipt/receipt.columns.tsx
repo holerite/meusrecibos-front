@@ -48,7 +48,7 @@ export const columns: ColumnDef<Payment>[] = [
     },
     {
         accessorKey: "payday",
-        header: "Data de pagamendo",
+        header: "Data de pagamento",
         cell: ({ row }) => (
             <>
                 {format(new Date(row.original.validity), 'dd/MM/yyyy')}
@@ -76,7 +76,7 @@ export const columns: ColumnDef<Payment>[] = [
             }
 
             return (
-                <button onClick={handlePrint}>
+                <button onClick={handlePrint} type="button">
                     {row.original.opened ? <MailOpenIcon className="w-5 h-5  text-gray-400" /> : <MailIcon className="w-5 h-5" />}
                 </button>
             )
