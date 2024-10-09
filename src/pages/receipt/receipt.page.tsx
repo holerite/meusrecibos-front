@@ -1,4 +1,4 @@
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable } from "./recepit.table.data-table";
 import { columns, type Payment } from "./receipt.columns";
 import { useQuery } from "@tanstack/react-query";
 

@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-query'
 import Router from "./routes.tsx";
 import "./global.css";
+import { Toaster } from "./components/ui/toaster.tsx";
 
 const queryClient = new QueryClient()
 
@@ -21,5 +22,6 @@ createRoot(document.getElementById("root")!).render(
 				</QueryClientProvider>
 			</AuthProvider>
 		</BrowserRouter>
+        <Toaster />
 	</StrictMode>,
 );
