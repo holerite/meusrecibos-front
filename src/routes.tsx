@@ -30,8 +30,6 @@ export default function Router() {
 								}
 							>
 								{routes?.map((route) => {
-                                    console.log(route);
-                                    
 									return (
 										<React.Fragment key={route.name}>
 											<Route key={`${route.route}`} path={route.route} element={

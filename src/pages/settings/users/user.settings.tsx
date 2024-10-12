@@ -2,18 +2,14 @@ import { columns, UsersDto } from "./users.columns";
 import { DataTable } from "./users.table";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { Button } from "@/components/ui/button";
 import { queryClient } from "@/main";
 import { DeleteUserAlert } from "./user.delete";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import { CreateUserDialog } from "./user.create";
 
 async function getData() {
     return (await api.get<UsersDto[]>('/user')).data;
-}
-
-async function inviteUser() {
-    return await api.post('/user/invite')
 }
 
 async function deleteData(id: string) {
@@ -26,7 +22,7 @@ export function UserSettings() {
     const [deleteId, setDeleteId] = useState("");
 
     const { data, isLoading } = useQuery({ queryKey: ['userConfig'], queryFn: getData })
-    const inviteMutation = useMutation({ mutationKey: ['inviteUser'], mutationFn: inviteUser })
+
 
     const deleteMutation = useMutation({
         mutationKey: ['deleteUser'],
@@ -49,11 +45,7 @@ export function UserSettings() {
         <>
             <div>
                 <div className="text-end mb-3">
-                    <Button
-                        onClick={() => inviteMutation.mutate()}
-                    >
-                        Convidar usuário
-                    </Button>
+                    <CreateUserDialog />
                 </div>
                 <DataTable
                     columns={columns}
