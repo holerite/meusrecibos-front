@@ -2,12 +2,12 @@ import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { Login, Token, Workspace } from "@/pages";
 import { Layout } from "./components/layout";
 import { AuthContext } from "./hooks/use-auth";
-import { useContext } from "react";
+import React, { useContext } from "react";
 
 
 export default function Router() {
 	const { user, routes, loading } = useContext(AuthContext);
-	console.log(user, routes, loading)
+    
 	return (
 		<>
 			{loading === false && (
@@ -29,17 +29,19 @@ export default function Router() {
 									</Layout>
 								}
 							>
-								{routes.map((route) => {
+								{routes?.map((route) => {
+                                    console.log(route);
+                                    
 									return (
-										<>
-											<Route key={`${route.href}`} path={route.href} element={
+										<React.Fragment key={route.name}>
+											<Route key={`${route.route}`} path={route.route} element={
 												<>
 													<div className="mx-auto grid w-full  gap-2">
-														<h1 className="text-3xl font-semibold">{route.title}</h1>
+														<h1 className="text-3xl font-semibold">{route.name}</h1>
 													</div>
 													{route.element}
 												</>} />
-										</>
+										</React.Fragment>
 									)
 								})}
 								{/* <Route path="/404" element={<NotFound />} />

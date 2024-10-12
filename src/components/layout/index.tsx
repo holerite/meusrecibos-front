@@ -37,7 +37,7 @@ export function Layout({ children }: LayoutProps) {
                     </div>
                     <div className="flex-1">
                         <nav className="grid items-start gap-2  px-2  font-medium lg:px-4">
-                            {routes.map((item) => <NavItem key={item.href} {...item} />)}
+                            {routes.map((item) => <NavItem key={item.route} {...item} />)}
                         </nav>
                     </div>
                 </div>
@@ -57,7 +57,7 @@ export function Layout({ children }: LayoutProps) {
                         </SheetTrigger>
                         <SheetContent side="left" className="flex flex-col">
                             <nav className="grid gap-2 text-lg font-medium">
-                                {routes.map((item) => <NavItem key={item.href} {...item} />)}
+                                {routes.map((item) => <NavItem key={item.route} {...item} />)}
                             </nav>
                         </SheetContent>
                     </Sheet>

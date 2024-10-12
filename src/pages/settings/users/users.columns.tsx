@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/button"
 import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, Trash2, } from "lucide-react"
-import { format } from 'date-fns'
-
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -10,7 +8,6 @@ export type UsersDto = {
     id: string
     name: string
     email: string
-    lastAccess: Date
 }
 
 export const columns: ColumnDef<UsersDto>[] = [
@@ -31,18 +28,6 @@ export const columns: ColumnDef<UsersDto>[] = [
     {
         accessorKey: "email",
         header: "Email",
-    },
-    {
-        accessorKey: "lastAccess",
-        header: "Último acesso",
-        cell:  ({ cell }) => {
-            console.log(cell.getValue())
-            return (
-                <>
-                    {format(cell.getValue() as string, "dd/mm/yyyy hh:MM")}
-                </>
-            )
-        }
     },
     {
         id: "actions",

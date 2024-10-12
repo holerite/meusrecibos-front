@@ -9,44 +9,43 @@ import { useToast } from "./use-toast";
 
 const systemRoutes = [
     {
-        title: "Relatório",
+        name: "Relatório",
         Icon: () => <Clipboard className="w-4 h-4" />,
         element: <Dashboard />,
-        href: "/",
+        route: "/",
     },
     {
-        title: "Recibos",
+        name: "Recibos",
         Icon: () => <File className="w-4 h-4" />,
         element: <Receipt />,
-        href: "/receipt",
+        route: "/receipt",
     },
     {
-        title: "Colaboradores",
+        name: "Colaboradores",
         Icon: () => <Users className="w-4 h-4" />,
         element: <Employees />,
-        href: "/employees",
+        route: "/employees",
     },
 
     {
-        title: "Configurações",
+        name: "Configurações",
         Icon: () => <Settings2 className="w-4 h-4" />,
         element: <Settings />,
-        href: "/settings",
+        route: "/settings",
     }
 ]
 
 type User = {
     id: string;
     name: string;
-    routes: { href: string }[];
+    routes: { route: string }[];
 };
 
 type Routes = {
-    title: string;
+    name: string;
     Icon: () => JSX.Element;
     element: JSX.Element;
-    href: string;
-    sub?: { title: string, href: string }[];
+    route: string;
 }
 
 type IAuthContextData = {
@@ -69,12 +68,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     function handleRoutes(userData: User) {
         const userRoutes = userData.routes.map((route) => {
-            const routeElement = systemRoutes.find((systemRoute) => systemRoute.href === route.href);
+            const routeElement = systemRoutes.find((systemRoute) => systemRoute.route === route.route);
             if (routeElement) {
                 return routeElement;
             }
             return null;
         }) as Routes[];
+
         setRoutes(userRoutes);
     }
 

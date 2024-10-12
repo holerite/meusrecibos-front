@@ -4,8 +4,8 @@ import { Link, useMatch } from 'react-router-dom';
 
 
 export type NavItemProps = {
-    title: string
-    href: string
+    name: string
+    route: string
     Icon: () => React.ReactNode
 } & NavProps
 
@@ -29,17 +29,17 @@ const menuItemVariants = cva(
 )
 
 
-export function NavItem({ title, href, Icon }: NavItemProps) {
+export function NavItem({ name, route, Icon }: NavItemProps) {
 
-    const isActive = useMatch(href);
+    const isActive = useMatch(route);
 
     return (
         <Link
-            to={href}
+            to={route}
             className={menuItemVariants({ variant: isActive ? 'active' : 'default' })}
         >
             {React.createElement(Icon, { name: Icon, className: "h-4 w-4" })}
-            {title}
+            {name}
         </Link>
     )
 }
