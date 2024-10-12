@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button"
 import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Trash2, } from "lucide-react"
-
+import { ArrowUpDown, Trash2Icon } from "lucide-react"
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type UsersDto = {
@@ -9,6 +8,7 @@ export type UsersDto = {
     name: string
     email: string
 }
+
 
 export const columns: ColumnDef<UsersDto>[] = [
     {
@@ -31,14 +31,25 @@ export const columns: ColumnDef<UsersDto>[] = [
     },
     {
         id: "actions",
+        header: "Ações",
         enableHiding: false,
-        cell: ({ row }) => {
+        cell: ({ table, row }) => {
+            const handleDelete = () => {
+                (table.options.meta as any)?.onDelete(row.original.id)
+            }
+
             return (
-                <Button size={"icon"} variant={"destructive"}>
-                    <Trash2 className="w-4 h-4" />
+                <Button
+                    size={"icon"}
+                    variant={"destructive"}
+                    onClick={handleDelete}
+                >
+                    <Trash2Icon
+                        className="w-4 h-4"
+                    />
                 </Button>
             )
-        }
+        },
     }
 
 

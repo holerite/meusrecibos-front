@@ -1,3 +1,4 @@
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { AuthProvider } from "./hooks/use-auth.tsx";
 import { BrowserRouter } from "react-router-dom";
@@ -9,11 +10,11 @@ import Router from "./routes.tsx";
 import "./global.css";
 import { Toaster } from "./components/ui/toaster.tsx";
 
-const queryClient = new QueryClient()
+export const queryClient = new QueryClient()
 
 // biome-ignore lint/style/noNonNullAssertion: It's okay to use non-null assertion here because we know that the element with the ID "root" exists.
 createRoot(document.getElementById("root")!).render(
-    <>
+    <StrictMode>
         <BrowserRouter>
             <AuthProvider>
                 <QueryClientProvider client={queryClient}>
@@ -22,5 +23,5 @@ createRoot(document.getElementById("root")!).render(
             </AuthProvider>
         </BrowserRouter>
         <Toaster />
-    </>
+    </StrictMode>
 );
