@@ -98,6 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             })
             handleRoutes(data.user)
             setUser(data.user);
+            api.defaults.headers.Authorization = `Bearer ${data.accessToken}`;
             localStorage.setItem('@meusrecibos:user', JSON.stringify(data.user));
             localStorage.setItem('@meusrecibos:accessToken', JSON.stringify(data.accessToken));
             localStorage.setItem('@meusrecibos:refreshToken', JSON.stringify(data.refreshToken));
