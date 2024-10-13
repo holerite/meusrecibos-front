@@ -32,13 +32,7 @@ export default function Router() {
 								{routes?.map((route) => {
 									return (
 										<React.Fragment key={route.name}>
-											<Route key={`${route.route}`} path={route.route} element={
-												<>
-													<div className="mx-auto grid w-full  gap-2">
-														<h1 className="text-3xl font-semibold">{route.name}</h1>
-													</div>
-													{route.element}
-												</>} />
+											<Route key={`${route.route}`} path={route.route} element={route.element} />
 										</React.Fragment>
 									)
 								})}

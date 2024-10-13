@@ -1,225 +1,143 @@
 import { DataTable } from "./recepit.table.data-table";
-import { columns, type Payment } from "./receipt.columns";
+import { columns, PaymentDTO } from "./receipt.columns";
 import { useQuery } from "@tanstack/react-query";
-
-import { faker } from "@faker-js/faker";
-import {
-	Form,
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { format, subDays } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
 import { useSearchParams } from "react-router-dom";
+import { IDataPagination, ITablePagination } from "@/utils/types/table";
+import { api } from "@/lib/api";
+import { useState } from "react";
+import { ReceiptFilter } from "./receipt.filter";
+import {
+    getCoreRowModel,
+    useReactTable,
+    getSortedRowModel,
+    getPaginationRowModel,
+    SortingState,
+} from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { ImportReceipt } from "./import-receipt.modal";
+import { receiptsFilterDefaultValues, receiptsFilterSchema } from "@/utils/forms/receipt";
 
-const TypeOptions = [
-	{
-		label: "13° Integral",
-		type: 1,
-	},
-	{
-		label: "13° Adiantado",
-		type: 2,
-	},
-	{
-		label: "Cartão de Ponto",
-		type: 3,
-	},
-	{
-		label: "Energia / Office",
-		type: 4,
-	},
-	{
-		label: "Férias",
-		type: 5,
-	},
-];
 
-async function getData(): Promise<Payment[]> {
-	await new Promise((resolve) =>
-		setTimeout(resolve, faker.helpers.arrayElement([100, 300])),
-	);
-
-	const response = new Array(100).fill(null).map(() => ({
-		id: faker.string.uuid(),
-		employee: faker.person.firstName(),
-		opened: faker.datatype.boolean(),
-		payday: faker.date.recent(),
-		type: faker.helpers.arrayElement([
-			"pending",
-			"processing",
-			"success",
-			"failed",
-		]),
-		validity: faker.date.recent(),
-	})) as Payment[];
-
-	return response;
+interface IPaymentData {
+    receipts: PaymentDTO[]
+    pagination: IDataPagination
 }
 
-const filterSchema = z.object({
-	employee: z.string(),
-	type: z.number(),
-	payday: z.object({
-		from: z.date(),
-		to: z.date(),
-	}),
-	validity: z.string(),
-	opened: z.boolean(),
-});
+async function getData(data: z.infer<typeof receiptsFilterSchema>, pagination: ITablePagination) {
+    return (await api.get<IPaymentData>("/receipt", {
+        params: {
+            ...data,
+            page: pagination.pageIndex,
+            take: pagination.pageSize,
+        },
+    })).data;
+}
 
 export function Receipt() {
-	const [searchParams] = useSearchParams()
-	const { data, isLoading } = useQuery({
-		queryKey: ["todos"],
-		queryFn: getData,
-	});
+    const [searchParams] = useSearchParams()
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const [rowSelection, setRowSelection] = useState({});
+    const [printOpenDialog, setOpenPrintDialog] = useState(false);
+    const [pagination, setPagination] = useState<ITablePagination>({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+    const [filterValues, setFilterValues] = useState<z.infer<typeof receiptsFilterSchema>>(receiptsFilterDefaultValues);
 
-	const form = useForm<z.infer<typeof filterSchema>>({
-		resolver: zodResolver(filterSchema),
-		defaultValues: {
-			employee: searchParams.get("employee") || "",
-			type: searchParams.get("type") || "",
-			payday: {
-				from: new Date(),
-				to: subDays(new Date(), 30),
-			},
-			validity: "",
-			opened: false,
-		},
-	});
+    const form = useForm<z.infer<typeof receiptsFilterSchema>>({
+        resolver: zodResolver(receiptsFilterSchema),
+        defaultValues: {
+            ...receiptsFilterDefaultValues,
+            employee: searchParams.get("employee") || "",
+        },
+    });
 
-	function onSubmit(values: any) {
-		console.log(values);
-	}
+    const { data, isLoading } = useQuery({
+        queryKey: ["receipts", filterValues, pagination],
+        queryFn: () => getData(filterValues, pagination),
+    });
 
-	return (
-		<>
-			<Form {...form}>
-				<form
-					onSubmit={form.handleSubmit(onSubmit)}
-					className=" flex items-center gap-4 border p-4 rounded-md"
-				>
-					<div className="flex h-full w-full gap-4 items-end">
-						<FormField
-							control={form.control}
-							name="employee"
-							render={({ field }) => (
-								<FormItem className="w-[240px]">
-									<FormLabel>Colaborador</FormLabel>
-									<FormControl>
-										<Input placeholder="Nome do colaborador" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="type"
-							render={({ field }) => (
-								<FormItem className="w-[240px]">
-									<FormLabel>Descrição</FormLabel>
-									<Select
-										onValueChange={field.onChange}
-										defaultValue={String(field.value)}
-									>
-										<FormControl>
-											<SelectTrigger>
-												<SelectValue placeholder="Todos" />
-											</SelectTrigger>
-										</FormControl>
-										<SelectContent>
-											{TypeOptions.map((option) => {
-												return (
-													<SelectItem value={String(option.type)} key={option.type}>
-														{option.label}
-													</SelectItem>
-												);
-											})}
-										</SelectContent>
-									</Select>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="payday"
-							render={({ field }) => (
-								<FormItem className="flex flex-col">
-									<FormLabel>Data de pagamento</FormLabel>
-									<div className={cn("grid gap-2")}>
-										<Popover>
-											<PopoverTrigger asChild>
-												<Button
-													id="date"
-													variant={"outline"}
-													className={cn(
-														"w-[240px] justify-start text-left font-normal",
-														!field.value && "text-muted-foreground",
-													)}
-												>
-													<CalendarIcon className="mr-2 h-4 w-4" />
-													{field.value.from ? (
-														field.value.to ? (
-															<>
-																{format(field.value.from, "LLL dd, y")} -{" "}
-																{format(field.value.to, "LLL dd, y")}
-															</>
-														) : (
-															format(field.value.from, "LLL dd, y")
-														)
-													) : (
-														<span>Selecione uma data</span>
-													)}
-												</Button>
-											</PopoverTrigger>
-											<PopoverContent className="w-auto p-0" align="start">
-												<Calendar
-													initialFocus
-													mode="range"
-													selected={field.value}
-													onSelect={field.onChange}
-													numberOfMonths={2}
-												/>
-											</PopoverContent>
-										</Popover>
-									</div>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-					</div>
-					<Button type="submit" className="w-40">
-						Filtrar
-					</Button>
-				</form>
-			</Form>
-			<DataTable columns={columns} loading={isLoading} data={data || []} />
-		</>
-	);
+    const table = useReactTable({
+        data: data?.receipts || [],
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        onSortingChange: setSorting,
+        getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        onRowSelectionChange: setRowSelection,
+        manualPagination: true,
+        onPaginationChange: setPagination,
+        pageCount: data?.pagination?.total_pages || 1,
+        getRowId: (row) => row.id,
+        state: {
+            sorting,
+            rowSelection,
+            pagination,
+        },
+        meta: {
+            onPrint: onPrint,
+        },
+    });
+
+    function onPrint(data: string[]) {
+        console.log(data);
+        setOpenPrintDialog(true);
+    }
+
+    function onSubmit(values: z.infer<typeof receiptsFilterSchema>) {
+        setFilterValues(values);
+    }
+
+    return (
+        <>
+            <div className="flex md:flex-row flex-col items-center justify-between gap-3">
+                <h1 className="text-3xl font-semibold">Recibos</h1>
+                <div className="space-x-3">
+                    <ReceiptFilter
+                        form={form}
+                        onSubmit={onSubmit}
+                        setFilterValues={setFilterValues}
+                        isLoading={isLoading}
+                    />
+                    <Button
+                        size="sm"
+                        onClick={() => onPrint(Object.keys(rowSelection))}
+                        disabled={!table.getFilteredSelectedRowModel().rows.length}
+                    >
+                        Imprimir ({table.getFilteredSelectedRowModel().rows.length})
+                    </Button>
+                    <ImportReceipt />
+
+                    {/* <CreateEmployeesDialog /> */}
+                </div>
+            </div>
+            <DataTable
+                columns={columns}
+                data={data?.receipts || []}
+                isLoading={isLoading}
+                table={table}
+                totalRecords={data?.pagination.total_records || 0}
+            />
+            <Dialog
+                open={printOpenDialog}
+                onOpenChange={(open) => setOpenPrintDialog(open)}
+            >
+                <DialogContent className="max-w-[80%] h-[90%] overflow-y-auto flex flex-col">
+                    <DialogHeader className="mb-4">
+                        <DialogTitle>Recibo</DialogTitle>
+                    </DialogHeader>
+                    <iframe src={""} className="w-full h-full" />
+                </DialogContent>
+            </Dialog>
+        </>
+    );
 }

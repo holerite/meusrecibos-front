@@ -6,7 +6,7 @@ import { Eye, MailIcon, MailOpenIcon } from "lucide-react"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type Payment = {
+export type PaymentDTO = {
     id: string
     employee: string
     type: "pending" | "processing" | "success" | "failed"
@@ -15,7 +15,7 @@ export type Payment = {
     opened: boolean
 }
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<PaymentDTO>[] = [
     {
         id: "select",
         header: ({ table }) => (

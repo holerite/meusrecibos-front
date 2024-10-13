@@ -43,8 +43,9 @@ export function UserSettings() {
 
     return (
         <>
-            <div>
-                <div className="text-end mb-3">
+            <div className="flex flex-col gap-4 lg:gap-6">
+                <div className="flex md:flex-row flex-col items-center justify-between gap-3">
+                    <h1 className="text-3xl font-semibold">Usuários</h1>
                     <CreateUserDialog />
                 </div>
                 <DataTable
