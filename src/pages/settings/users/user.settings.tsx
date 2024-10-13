@@ -2,11 +2,11 @@ import { columns, UsersDto } from "./users.columns";
 import { DataTable } from "./users.table";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { queryClient } from "@/main";
 import { DeleteUserAlert } from "./user.delete";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { CreateUserDialog } from "./user.create";
+import { queryClient } from "@/lib/query";
 
 async function getData() {
     return (await api.get<UsersDto[]>('/user')).data;

@@ -18,13 +18,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
-import { queryClient } from "@/main";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { cpfMask, removeMask } from "@/utils/masks";
+import { queryClient } from "@/lib/query";
 
 const schema = z.object({
     name: z.string({
@@ -83,6 +83,7 @@ export function CreateEmployeesDialog() {
         <Dialog
             open={isOpen}
             onOpenChange={setIsOpen}
+            
         >
             <DialogTrigger asChild>
                 <Button>Cadastrar colaborador</Button>
