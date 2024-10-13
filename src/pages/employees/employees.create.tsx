@@ -25,25 +25,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { cpfMask, removeMask } from "@/utils/masks";
 import { queryClient } from "@/lib/query";
+import { employeesCreateSchema, employeesCreateFormDefaultValues } from "@/utils/forms/employees";
 
-const schema = z.object({
-    name: z.string({
-        message: "O nome é obrigatório"
-    }),
-    email: z.string({
-        message: "O email é obrigatório"
-    }).email(
-        "Email inválido"
-    ),
-    enrolment: z.string({
-        message: "A matrícula é obrigatória"
-    }),
-    cpf: z.string({
-        message: "O CPF é obrigatório"
-    }),
-});
 
-async function createEmployees(data: z.infer<typeof schema>) {
+async function createEmployees(data: z.infer<typeof employeesCreateSchema>) {
     return (await api.post('/employees', data));
 }
 
@@ -68,11 +53,12 @@ export function CreateEmployeesDialog() {
         }
     })
 
-    const form = useForm<z.infer<typeof schema>>({
-        resolver: zodResolver(schema),
+    const form = useForm<z.infer<typeof employeesCreateSchema>>({
+        resolver: zodResolver(employeesCreateSchema),
+        defaultValues: employeesCreateFormDefaultValues
     });
 
-    function onSubmit(values: z.infer<typeof schema>) {
+    function onSubmit(values: z.infer<typeof employeesCreateSchema>) {
         mutate({
             ...values,
             cpf: removeMask(values.cpf)

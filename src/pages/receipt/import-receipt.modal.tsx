@@ -22,37 +22,68 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { Select, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "@/hooks/use-toast";
+import { api } from "@/lib/api";
+import { queryClient } from "@/lib/query";
 import { cn } from "@/lib/utils";
+import { receiptsCreateDefaultValues, receiptsCreateSchema } from "@/utils/forms/receipt";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const schema = z.object({
-    month: z.string({
-        description: "O ano e mês de vigência é obrigatório"
-    }),
-    payday: z.date(),
-    file:
-        typeof window === "undefined" ? z.any() : z.instanceof(FileList),
-});
+async function importReceipt(data: z.infer<typeof receiptsCreateSchema>) {
+    return (await api.post('/receipt', data));
+}
 
-export function ImportReceipt() {
-    const form = useForm<z.infer<typeof schema>>({
-        resolver: zodResolver(schema),
+export function ImportReceiptDialog() {
+    const [isOpen, setIsOpen] = useState(false);
+    const { mutate, isPending } = useMutation({
+        mutationKey: ['importReceipt'],
+        mutationFn: importReceipt,
+        onSuccess: () => {
+            toast({
+                title: "Colaborador cadastrado com sucesso",
+            })
+            setIsOpen(false);
+            form.reset();
+        },
+        onSettled: () => queryClient.invalidateQueries({ queryKey: ['employees'] }),
+        onError: (error) => {
+            toast({
+                title: "Erro ao cadastrar colaborador",
+                description: error?.message || "Erro desconhecido",
+            })
+        }
+    })
+
+    const form = useForm<z.infer<typeof receiptsCreateSchema>>({
+        resolver: zodResolver(receiptsCreateSchema),
+        defaultValues: receiptsCreateDefaultValues
     });
 
-    const fileRef = form.register("file");
+    const fileRef = form.register("receipt");
 
-    function onSubmit(values: any) {
+    function onSubmit(values: z.infer<typeof receiptsCreateSchema>) {
         console.log(values);
+
+        // mutate({
+        //     ...values
+        // });
     }
 
     return (
         <>
-            <Dialog>
-                <DialogTrigger>
+            <Dialog
+                open={isOpen}
+                onOpenChange={setIsOpen}
+            >
+                <DialogTrigger asChild>
                     <Button>Importar</Button>
                 </DialogTrigger>
                 <DialogContent>
@@ -62,15 +93,48 @@ export function ImportReceipt() {
                     <div>
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
-                                <div className="flex items-end gap-4">
+                                <FormField
+                                    control={form.control}
+                                    name="type"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Descrição</FormLabel>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={String(field.value)}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Todos" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {/* {TypeOptions.map((option) => {
+                                                                return (
+                                                                    <SelectItem value={String(option.type)} key={option.type}>
+                                                                        {option.label}
+                                                                    </SelectItem>
+                                                                );
+                                                            })} */}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <div className="grid grid-cols-2 gap-2.5">
                                     <FormField
                                         control={form.control}
-                                        name="month"
+                                        name="validity"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Mês-Ano</FormLabel>
+                                                <FormLabel>Data de vigência</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} placeholder="mm-aaaa" />
+                                                    <Input
+                                                        placeholder="Nome do colaborador"
+                                                        type="month"
+                                                        {...field}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -80,7 +144,7 @@ export function ImportReceipt() {
                                         control={form.control}
                                         name="payday"
                                         render={({ field }) => (
-                                            <FormItem className="flex flex-col">
+                                            <FormItem>
                                                 <FormLabel>Data de pagamento</FormLabel>
                                                 <Popover>
                                                     <PopoverTrigger asChild>
@@ -88,12 +152,14 @@ export function ImportReceipt() {
                                                             <Button
                                                                 variant={"outline"}
                                                                 className={cn(
-                                                                    "w-[240px] pl-3 text-left font-normal",
+                                                                    "w-full pl-3 text-left font-normal",
                                                                     !field.value && "text-muted-foreground",
                                                                 )}
                                                             >
                                                                 {field.value ? (
-                                                                    format(field.value, "PPP")
+                                                                    format(field.value, "dd LLL y", {
+                                                                        locale: ptBR
+                                                                    })
                                                                 ) : (
                                                                     <span>Selecione uma data</span>
                                                                 )}
@@ -110,6 +176,7 @@ export function ImportReceipt() {
                                                             selected={field.value}
                                                             onSelect={field.onChange}
                                                             initialFocus
+                                                            locale={ptBR}
                                                         />
                                                     </PopoverContent>
                                                 </Popover>
@@ -118,9 +185,10 @@ export function ImportReceipt() {
                                         )}
                                     />
                                 </div>
+
                                 <FormField
                                     control={form.control}
-                                    name="file"
+                                    name="receipt"
                                     render={() => {
                                         return (
                                             <FormItem>
@@ -128,7 +196,6 @@ export function ImportReceipt() {
                                                 <FormControl>
                                                     <Input
                                                         type="file"
-                                                        placeholder="shadcn"
                                                         {...fileRef}
                                                     />
                                                 </FormControl>
@@ -138,7 +205,12 @@ export function ImportReceipt() {
                                     }}
                                 />
                                 <DialogFooter>
-                                    <Button type="submit">Confirmar</Button>
+                                    <Button
+                                        type="submit"
+                                        isLoading={isPending}
+                                    >
+                                        Confirmar
+                                    </Button>
                                 </DialogFooter>
                             </form>
                         </Form>

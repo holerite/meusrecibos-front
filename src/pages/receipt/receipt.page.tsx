@@ -23,8 +23,10 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { ImportReceipt } from "./import-receipt.modal";
-import { receiptsFilterDefaultValues, receiptsFilterSchema } from "@/utils/forms/receipt";
+import { ImportReceiptDialog } from "./import-receipt.modal";
+import { receiptsFilterDefaultValues, receiptsFilterFormDefaultValues, receiptsFilterSchema } from "@/utils/forms/receipt";
+import { formatISO } from "date-fns";
+import { toIsoDate } from "@/utils/masks";
 
 
 interface IPaymentData {
@@ -32,7 +34,16 @@ interface IPaymentData {
     pagination: IDataPagination
 }
 
-async function getData(data: z.infer<typeof receiptsFilterSchema>, pagination: ITablePagination) {
+export interface IReceiptsFilterValues {
+    employee: string
+    type: string
+    paydayFrom: string
+    paydayTo: string
+    validity: string
+    opened: boolean
+}
+
+async function getData(data: IReceiptsFilterValues, pagination: ITablePagination) {
     return (await api.get<IPaymentData>("/receipt", {
         params: {
             ...data,
@@ -51,12 +62,12 @@ export function Receipt() {
         pageIndex: 0,
         pageSize: 10,
     });
-    const [filterValues, setFilterValues] = useState<z.infer<typeof receiptsFilterSchema>>(receiptsFilterDefaultValues);
+    const [filterValues, setFilterValues] = useState<IReceiptsFilterValues>(receiptsFilterDefaultValues);
 
     const form = useForm<z.infer<typeof receiptsFilterSchema>>({
         resolver: zodResolver(receiptsFilterSchema),
         defaultValues: {
-            ...receiptsFilterDefaultValues,
+            ...receiptsFilterFormDefaultValues,
             employee: searchParams.get("employee") || "",
         },
     });
@@ -94,7 +105,14 @@ export function Receipt() {
     }
 
     function onSubmit(values: z.infer<typeof receiptsFilterSchema>) {
-        setFilterValues(values);
+        setFilterValues({
+            employee: values?.employee || "",
+            type: values?.type || "",
+            paydayFrom: formatISO(values?.payday?.from || new Date()),
+            paydayTo: formatISO(values?.payday?.to || new Date()),
+            validity: toIsoDate(values.validity),
+            opened: values?.opened,
+        });
     }
 
     return (
@@ -109,15 +127,12 @@ export function Receipt() {
                         isLoading={isLoading}
                     />
                     <Button
-                        size="sm"
                         onClick={() => onPrint(Object.keys(rowSelection))}
                         disabled={!table.getFilteredSelectedRowModel().rows.length}
                     >
                         Imprimir ({table.getFilteredSelectedRowModel().rows.length})
                     </Button>
-                    <ImportReceipt />
-
-                    {/* <CreateEmployeesDialog /> */}
+                    <ImportReceiptDialog />
                 </div>
             </div>
             <DataTable

@@ -19,24 +19,16 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import { queryClient } from "@/lib/query";
+import { userDefaultValues, userSchema } from "@/utils/forms/user";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const schema = z.object({
-    name: z.string({
-        message: "O nome é obrigatório"
-    }),
-    email: z.string({
-        message: "O email é obrigatório"
-    }).email(
-        "Email inválido"
-    ),
-});
 
-async function inviteUser(data: z.infer<typeof schema>) {
+
+async function inviteUser(data: z.infer<typeof userSchema>) {
     return (await api.post('/user', data));
 }
 
@@ -61,11 +53,12 @@ export function CreateUserDialog() {
         }
     })
 
-    const form = useForm<z.infer<typeof schema>>({
-        resolver: zodResolver(schema),
+    const form = useForm<z.infer<typeof userSchema>>({
+        resolver: zodResolver(userSchema),
+        defaultValues: userDefaultValues
     });
 
-    function onSubmit(values: z.infer<typeof schema>) {
+    function onSubmit(values: z.infer<typeof userSchema>) {
         mutate(values);
     }
 

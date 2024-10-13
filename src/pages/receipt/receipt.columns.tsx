@@ -57,7 +57,7 @@ export const columns: ColumnDef<PaymentDTO>[] = [
     },
     {
         accessorKey: "validity",
-        header: "Mês-ano",
+        header: "Data de vigência",
         cell: ({ row }) => (
             <Button size={"sm"} >
                 {new Date(row.original.validity).getMonth() + 1} - {new Date(row.original.validity).getFullYear()}
