@@ -18,6 +18,7 @@ export const columns: ColumnDef<UsersDto>[] = [
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    className="px-0"
                 >
                     Nome
                     <ArrowUpDown className="ml-2 h-4 w-4" />

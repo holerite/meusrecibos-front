@@ -14,6 +14,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { Loader2Icon } from "lucide-react"
 
 interface DataTableProps<TData, TValue> {
     isLoading: boolean
@@ -33,7 +34,7 @@ export function DataTable<TData, TValue>({
         columns,
         getCoreRowModel: getCoreRowModel(),
         meta: {
-            onDelete (id: TValue) {
+            onDelete(id: TValue) {
                 handleDelete(id)
             }
         }
@@ -61,36 +62,37 @@ export function DataTable<TData, TValue>({
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {!isLoading ? (
-                        <>
-                            {table.getRowModel().rows?.length ? (
-                                table.getRowModel().rows.map((row) => (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={row.getIsSelected() && "selected"}
-                                    >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))
-                            ) : (
+                    {table.getRowModel().rows?.length ? (
+                        table.getRowModel().rows.map((row) => (
+                            <TableRow
+                                key={row.id}
+                                data-state={row.getIsSelected() && "selected"}
+                            >
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))
+                    ) : (
+                    <>
+                        {isLoading ? (<>
+                            <TableRow>
+                                <TableCell colSpan={columns.length} className="h-24 ">
+                                    <Loader2Icon size={24} className="animate-spin mx-auto" />
+                                </TableCell>
+                            </TableRow>
+                        </>) : (
+                            <>
                                 <TableRow>
                                     <TableCell colSpan={columns.length} className="h-24 text-center">
-                                        Sem resultados
+                                        Sem resultados.
                                     </TableCell>
                                 </TableRow>
-                            )}
-                        </>
-                    ) : (
-                        <TableRow>
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                Carregando...
-                            </TableCell>
-                        </TableRow>
-                    )}
+                            </>
+                        )}
+                    </>)}
                 </TableBody>
             </Table>
         </div>
