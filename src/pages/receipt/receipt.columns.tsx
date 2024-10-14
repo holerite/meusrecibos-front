@@ -65,7 +65,7 @@ export const columns: ColumnDef<PaymentDTO>[] = [
         header: "Data de pagamento",
         cell: ({ row }) => (
             <>
-                {format(new Date(row.original.validity), 'dd/MM/yyyy')}
+                {format(new Date(row.original.payday), 'dd/MM/yyyy')}
             </>
         ),
     },

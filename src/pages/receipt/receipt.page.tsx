@@ -38,10 +38,10 @@ interface IPaymentData {
 export interface IReceiptsFilterValues {
     employee: string
     type: string
-    paydayFrom: string
-    paydayTo: string
+    paydayFrom?: string
+    paydayTo?: string
     validity: string
-    opened: boolean
+    opened?: string
 }
 
 async function getData(data: IReceiptsFilterValues, pagination: ITablePagination) {
@@ -117,9 +117,9 @@ export function Receipt() {
     function onSubmit(values: z.infer<typeof receiptsFilterSchema>) {
         setFilterValues({
             employee: values?.employee || "",
-            type: values?.type || "",
-            paydayFrom: formatISO(values?.payday?.from || new Date()),
-            paydayTo: formatISO(values?.payday?.to || new Date()),
+            type: values?.type === "null" ? "" : values?.type || "",
+            paydayFrom: values?.payday?.from ? formatISO(values?.payday?.from) : undefined,
+            paydayTo: values?.payday?.to ? formatISO(values?.payday?.to) : undefined,
             validity: toIsoDate(values.validity),
             opened: values?.opened,
         });

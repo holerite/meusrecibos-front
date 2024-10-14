@@ -18,7 +18,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { receiptsFilterDefaultValues, receiptsFilterSchema } from "@/utils/forms/receipt";
 import { UseFormReturn } from "react-hook-form";
-import { Switch } from "@/components/ui/switch";
 import { IReceiptsFilterValues } from "./receipt.page";
 import { IReceiptType } from "@/utils/types/receipt-type";
 interface IEmployeeFilterProps {
@@ -30,7 +29,6 @@ interface IEmployeeFilterProps {
 }
 
 export function ReceiptFilter({ form, onSubmit, setFilterValues, isLoading, receiptTypes }: IEmployeeFilterProps) {
-
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -55,37 +53,37 @@ export function ReceiptFilter({ form, onSubmit, setFilterValues, isLoading, rece
                                     </FormItem>
                                 )}
                             />
-
+                            <FormField
+                                control={form.control}
+                                name="type"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Descrição</FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={String(field.value)}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Todos" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="null">Todos</SelectItem>
+                                                {receiptTypes.map((type) => {
+                                                    return (
+                                                        <SelectItem value={String(type.id)} key={String(type.id)}>
+                                                            {type.name}
+                                                        </SelectItem>
+                                                    );
+                                                })}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                             <div className="grid grid-cols-2 gap-2.5">
-                                <FormField
-                                    control={form.control}
-                                    name="type"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Descrição</FormLabel>
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                defaultValue={String(field.value)}
-                                            >
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Todos" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    {receiptTypes.map((type) => {
-                                                        return (
-                                                            <SelectItem value={String(type.id)} key={String(type.id)}>
-                                                                {type.name}
-                                                            </SelectItem>
-                                                        );
-                                                    })}
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
                                 <FormField
                                     control={form.control}
                                     name="validity"
@@ -103,7 +101,34 @@ export function ReceiptFilter({ form, onSubmit, setFilterValues, isLoading, rece
                                         </FormItem>
                                     )}
                                 />
-
+                                <FormField
+                                    control={form.control}
+                                    name="opened"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Status</FormLabel>
+                                            <Select
+                                                onValueChange={(value) => {
+                                                    if (value === "undefined") field.onChange(undefined)
+                                                    else field.onChange(value)
+                                                }}
+                                                defaultValue={String(field.value)}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Todos" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="undefined">Todos</SelectItem>
+                                                    <SelectItem value="true">Abertos</SelectItem>
+                                                    <SelectItem value="false">Fechados</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
                             </div>
                             <div className="flex gap-2.5">
                                 <FormField
@@ -148,7 +173,10 @@ export function ReceiptFilter({ form, onSubmit, setFilterValues, isLoading, rece
                                                         <Calendar
                                                             initialFocus
                                                             mode="range"
-                                                            selected={field.value}
+                                                            selected={{
+                                                                from: field.value?.from || undefined,
+                                                                to: field.value?.to || undefined,
+                                                            }}
                                                             onSelect={field.onChange}
                                                             numberOfMonths={2}
                                                             locale={ptBR}
@@ -157,23 +185,6 @@ export function ReceiptFilter({ form, onSubmit, setFilterValues, isLoading, rece
                                                 </Popover>
                                             </div>
                                             <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="opened"
-                                    render={({ field }) => (
-                                        <FormItem className="min-w-16">
-                                            <FormLabel>Aberto</FormLabel>
-                                            <FormControl>
-                                                <div>
-                                                    <Switch
-                                                        checked={field.value}
-                                                        onCheckedChange={field.onChange}
-                                                    />
-                                                </div>
-                                            </FormControl>
                                         </FormItem>
                                     )}
                                 />

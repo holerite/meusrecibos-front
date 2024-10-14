@@ -1,14 +1,13 @@
-import { formatISO, subDays } from 'date-fns';
 import { z } from 'zod';
 
 //usado no state que vai ser enviado para a API
 export const receiptsFilterDefaultValues = {
     employee: "",
     type: "",
-    paydayFrom: formatISO(subDays(new Date(), 30)),
-    paydayTo: formatISO(new Date()),
+    paydayFrom: undefined,
+    paydayTo: undefined,
     validity: "",
-    opened: false,
+    opened: undefined,
 }
 
 //usado no form
@@ -16,22 +15,22 @@ export const receiptsFilterFormDefaultValues = {
     employee: "",
     type: "",
     payday: {
-        from: subDays(new Date(), 30),
-        to: new Date(),
+        from: undefined,
+        to: undefined,
     },
     validity: "",
-    opened: false,
+    opened: undefined,
 }
 
 export const receiptsFilterSchema = z.object({
     employee: z.string().optional(),
     type: z.string().optional(),
     payday: z.object({
-        from: z.date(),
-        to: z.date(),
+        from: z.date().or(z.undefined()),
+        to: z.date().or(z.undefined()),
     }).optional(),
     validity: z.string(),
-    opened: z.boolean(),
+    opened: z.string().or(z.undefined()),
 });
 
 export const receiptsCreateDefaultValues = {
