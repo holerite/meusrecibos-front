@@ -1,11 +1,8 @@
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { UserSettings } from "./users/user.settings";
-import { PermissionsSettings } from "./permissions.settings";
-import { LogsSettings } from "./logs.settings";
-import { ProfileSettings } from "./profile.settings";
 import { useSearchParams } from "react-router-dom";
-import { CompanySettings } from "./company.settings";
+import { ReceiptTypeSettings } from "./receipt-type/receipt-type.settings";
 
 export function Settings() {
     const [params, setSearchParams] = useSearchParams()
@@ -19,26 +16,14 @@ export function Settings() {
 
             <Tabs defaultValue={params.get("tab") || "users"} onValueChange={(e) => handleTabChange(e)}>
                 <TabsList  >
-                    {/* <TabsTrigger value="company">Empresa</TabsTrigger> */}
                     <TabsTrigger value="users">Usuários</TabsTrigger>
-                    {/* <TabsTrigger value="permissions">Permissões</TabsTrigger> */}
-                    {/* <TabsTrigger value="logs">Registros</TabsTrigger> */}
-                    {/* <TabsTrigger value="profile">Perfil</TabsTrigger> */}
+                    <TabsTrigger value="receipt-types">Descrições de recibos</TabsTrigger>
                 </TabsList>
-                <TabsContent value="company" >
-                    <CompanySettings />
-                </TabsContent>
                 <TabsContent value="users">
                     <UserSettings />
                 </TabsContent>
-                <TabsContent value="permissions">
-                    <PermissionsSettings />
-                </TabsContent>
-                <TabsContent value="logs">
-                    <LogsSettings />
-                </TabsContent>
-                <TabsContent value="profile">
-                    <ProfileSettings />
+                <TabsContent value="receipt-types">
+                    <ReceiptTypeSettings />
                 </TabsContent>
             </Tabs>
         </>
