@@ -22,12 +22,13 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Select, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import { queryClient } from "@/lib/query";
 import { cn } from "@/lib/utils";
 import { receiptsCreateDefaultValues, receiptsCreateSchema } from "@/utils/forms/receipt";
+import { IReceiptType } from "@/utils/types/receipt-type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -37,11 +38,15 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+interface IImportReceiptDialogProps {
+    receiptTypes: IReceiptType[]
+}
+
 async function importReceipt(data: z.infer<typeof receiptsCreateSchema>) {
     return (await api.post('/receipt', data));
 }
 
-export function ImportReceiptDialog() {
+export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps) {
     const [isOpen, setIsOpen] = useState(false);
     const { mutate, isPending } = useMutation({
         mutationKey: ['importReceipt'],
@@ -109,13 +114,13 @@ export function ImportReceiptDialog() {
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    {/* {TypeOptions.map((option) => {
-                                                                return (
-                                                                    <SelectItem value={String(option.type)} key={option.type}>
-                                                                        {option.label}
-                                                                    </SelectItem>
-                                                                );
-                                                            })} */}
+                                                    {receiptTypes.map((type) => {
+                                                        return (
+                                                            <SelectItem value={String(type.id)} key={String(type.id)}>
+                                                                {type.name}
+                                                            </SelectItem>
+                                                        );
+                                                    })}
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />

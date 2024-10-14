@@ -20,37 +20,16 @@ import { receiptsFilterDefaultValues, receiptsFilterSchema } from "@/utils/forms
 import { UseFormReturn } from "react-hook-form";
 import { Switch } from "@/components/ui/switch";
 import { IReceiptsFilterValues } from "./receipt.page";
-
-const TypeOptions = [
-    {
-        label: "13° Integral",
-        type: 1,
-    },
-    {
-        label: "13° Adiantado",
-        type: 2,
-    },
-    {
-        label: "Cartão de Ponto",
-        type: 3,
-    },
-    {
-        label: "Energia / Office",
-        type: 4,
-    },
-    {
-        label: "Férias",
-        type: 5,
-    },
-];
+import { IReceiptType } from "@/utils/types/receipt-type";
 interface IEmployeeFilterProps {
     form: UseFormReturn<z.infer<typeof receiptsFilterSchema>>
     onSubmit: (values: z.infer<typeof receiptsFilterSchema>) => void
     setFilterValues: React.Dispatch<React.SetStateAction<IReceiptsFilterValues>>
     isLoading: boolean
+    receiptTypes: IReceiptType[]
 }
 
-export function ReceiptFilter({ form, onSubmit, setFilterValues, isLoading }: IEmployeeFilterProps) {
+export function ReceiptFilter({ form, onSubmit, setFilterValues, isLoading, receiptTypes }: IEmployeeFilterProps) {
 
     return (
         <Popover>
@@ -94,10 +73,10 @@ export function ReceiptFilter({ form, onSubmit, setFilterValues, isLoading }: IE
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    {TypeOptions.map((option) => {
+                                                    {receiptTypes.map((type) => {
                                                         return (
-                                                            <SelectItem value={String(option.type)} key={option.type}>
-                                                                {option.label}
+                                                            <SelectItem value={String(type.id)} key={String(type.id)}>
+                                                                {type.name}
                                                             </SelectItem>
                                                         );
                                                     })}

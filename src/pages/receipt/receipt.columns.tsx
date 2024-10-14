@@ -8,8 +8,12 @@ import { Eye, MailIcon, MailOpenIcon } from "lucide-react"
 // You can use a Zod schema here if you want.
 export type PaymentDTO = {
     id: string
-    employee: string
-    type: "pending" | "processing" | "success" | "failed"
+    employee: {
+        name: string
+    }
+    ReceiptsTypes: {
+        name: string
+    }
     payday: Date
     validity: Date
     opened: boolean
@@ -41,10 +45,20 @@ export const columns: ColumnDef<PaymentDTO>[] = [
     {
         accessorKey: "employee",
         header: "Colaborador",
+        cell: ({ row }) => (
+            <>
+                {row.original?.employee?.name || "Sem colaborador"}
+            </>
+        ),
     },
     {
-        accessorKey: "type",
+        accessorKey: "ReceiptsTypes",
         header: "Descrição",
+        cell: ({ row }) => (
+            <>
+                {row.original?.ReceiptsTypes?.name || "Sem descrição"}
+            </>
+        ),
     },
     {
         accessorKey: "payday",

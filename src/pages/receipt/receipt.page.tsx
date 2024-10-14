@@ -27,6 +27,7 @@ import { ImportReceiptDialog } from "./import-receipt.modal";
 import { receiptsFilterDefaultValues, receiptsFilterFormDefaultValues, receiptsFilterSchema } from "@/utils/forms/receipt";
 import { formatISO } from "date-fns";
 import { toIsoDate } from "@/utils/masks";
+import { IReceiptType } from "@/utils/types/receipt-type";
 
 
 interface IPaymentData {
@@ -53,6 +54,10 @@ async function getData(data: IReceiptsFilterValues, pagination: ITablePagination
     })).data;
 }
 
+async function getReceiptTypes() {
+    return (await api.get<IReceiptType[]>("/receipt/type")).data;
+}
+
 export function Receipt() {
     const [searchParams] = useSearchParams()
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -75,6 +80,11 @@ export function Receipt() {
     const { data, isLoading } = useQuery({
         queryKey: ["receipts", filterValues, pagination],
         queryFn: () => getData(filterValues, pagination),
+    });
+
+    const receiptQuery = useQuery({
+        queryKey: ["receiptTypes"],
+        queryFn: getReceiptTypes,
     });
 
     const table = useReactTable({
@@ -125,6 +135,7 @@ export function Receipt() {
                         onSubmit={onSubmit}
                         setFilterValues={setFilterValues}
                         isLoading={isLoading}
+                        receiptTypes={receiptQuery.data || []}
                     />
                     <Button
                         onClick={() => onPrint(Object.keys(rowSelection))}
@@ -132,7 +143,9 @@ export function Receipt() {
                     >
                         Imprimir ({table.getFilteredSelectedRowModel().rows.length})
                     </Button>
-                    <ImportReceiptDialog />
+                    <ImportReceiptDialog
+                        receiptTypes={receiptQuery.data || []}
+                    />
                 </div>
             </div>
             <DataTable
