@@ -7,6 +7,7 @@ export type NavItemProps = {
     name: string
     route: string
     Icon: () => React.ReactNode
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>
 } & NavProps
 
 type NavProps = {
@@ -29,7 +30,7 @@ const menuItemVariants = cva(
 )
 
 
-export function NavItem({ name, route, Icon }: NavItemProps) {
+export function NavItem({ name, route, Icon, setOpen }: NavItemProps) {
 
     const isActive = useMatch(route);
 
@@ -37,6 +38,7 @@ export function NavItem({ name, route, Icon }: NavItemProps) {
         <Link
             to={route}
             className={menuItemVariants({ variant: isActive ? 'active' : 'default' })}
+            onClick={() => setOpen(false)}
         >
             {React.createElement(Icon, { name: Icon, className: "h-4 w-4" })}
             {name}

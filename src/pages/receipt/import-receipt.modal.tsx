@@ -125,7 +125,7 @@ export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps)
                                             <FormLabel>Descrição</FormLabel>
                                             <Select
                                                 onValueChange={field.onChange}
-                                                defaultValue={String(field.value)}
+                                                value={String(field.value)}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>

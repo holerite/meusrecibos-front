@@ -20,6 +20,7 @@ import { receiptsFilterDefaultValues, receiptsFilterSchema } from "@/utils/forms
 import { UseFormReturn } from "react-hook-form";
 import { IReceiptsFilterValues } from "./receipt.page";
 import { IReceiptType } from "@/utils/types/receipt-type";
+import { useSearchParams } from "react-router-dom";
 interface IEmployeeFilterProps {
     form: UseFormReturn<z.infer<typeof receiptsFilterSchema>>
     onSubmit: (values: z.infer<typeof receiptsFilterSchema>) => void
@@ -30,7 +31,7 @@ interface IEmployeeFilterProps {
 }
 
 export function ReceiptFilter({ form, onSubmit, filterValues, setFilterValues, isLoading, receiptTypes }: IEmployeeFilterProps) {
-
+    const [, setSearchParams] = useSearchParams()
     function numberOfFiltersApplied() {
         return Object.values(filterValues).filter((value) => value).length;
     }
@@ -70,7 +71,7 @@ export function ReceiptFilter({ form, onSubmit, filterValues, setFilterValues, i
                                         <FormLabel>Descrição</FormLabel>
                                         <Select
                                             onValueChange={field.onChange}
-                                            defaultValue={String(field.value)}
+                                            value={String(field.value)}
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
@@ -121,7 +122,7 @@ export function ReceiptFilter({ form, onSubmit, filterValues, setFilterValues, i
                                                     if (value === "undefined") field.onChange(undefined)
                                                     else field.onChange(value)
                                                 }}
-                                                defaultValue={String(field.value)}
+                                                value={String(field.value)}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
@@ -205,6 +206,7 @@ export function ReceiptFilter({ form, onSubmit, filterValues, setFilterValues, i
                                     onClick={() => {
                                         form.reset();
                                         setFilterValues(receiptsFilterDefaultValues);
+                                        setSearchParams({});
                                     }}
                                 >
                                     Limpar

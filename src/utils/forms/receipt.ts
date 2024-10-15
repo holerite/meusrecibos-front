@@ -13,7 +13,7 @@ export const receiptsFilterDefaultValues = {
 //usado no form
 export const receiptsFilterFormDefaultValues = {
     employee: "",
-    type: "",
+    type: "null",
     payday: {
         from: undefined,
         to: undefined,

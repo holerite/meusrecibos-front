@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "react-router-dom";
 import { IDataPagination, ITablePagination } from "@/utils/types/table";
 import { api } from "@/lib/api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ReceiptFilter } from "./receipt.filter";
 import {
     getCoreRowModel,
@@ -129,6 +129,14 @@ export function Receipt() {
             opened: values?.opened,
         });
     }
+
+    useEffect(() => {
+        form.setValue("employee", searchParams.get("employee") || "");
+        form.setValue("type", searchParams.get("type") || "null");
+    }, [])
+
+    console.log(form.getValues());
+    
 
     return (
         <>
