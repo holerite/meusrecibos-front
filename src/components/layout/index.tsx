@@ -4,7 +4,7 @@ import {
     Package2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -17,14 +17,17 @@ import { NavItem } from "./navItem"
 import { AuthContext } from "@/hooks/use-auth"
 import { useContext } from "react"
 
-
 type LayoutProps = {
     children: React.ReactNode
 }
 
 
 export function Layout({ children }: LayoutProps) {
-    const { routes, signOut } = useContext(AuthContext)
+    const { routes, signOut, user } = useContext(AuthContext)
+
+    console.log(user);
+
+
     return (
         <div className="grid min-h-screen w-full  md:grid-cols-[220px_1fr] lg:grid-cols-[250px_1fr]">
             <div className="hidden border-r bg-muted/40 md:block">
@@ -63,23 +66,23 @@ export function Layout({ children }: LayoutProps) {
                     </Sheet>
                     <div className="w-full flex-1 items-end flex justify-end gap-4">
                         <div className="flex flex-col">
-                            <h1 className="text-primary text-sm font-medium">Nome do usuário</h1>
-                            <p className="text-secondary-foreground text-xs">Empresa</p>
+                            <h1 className="text-primary text-sm font-medium">{user?.name || "Não informado"}</h1>
+                            <p className="text-secondary-foreground text-xs">{user?.companyName || ""}</p>
                         </div>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="secondary" size="icon" className="rounded-full">
-                                    <Avatar >
-                                        <AvatarImage src="https://github.com/shadcn.png" />
-                                        <AvatarFallback >CN</AvatarFallback>
+                                    <Avatar>
+                                        <AvatarFallback className="text-secondary bg-secondary-foreground">
+                                            {user?.name[0] || "N"}
+                                        </AvatarFallback>
                                     </Avatar>
-
                                     <span className="sr-only">Toggle user menu</span>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                                 <DropdownMenuItem>
-                                    <Link to="/settings?tab=profile">Configurações</Link>
+                                    <Link to="/settings">Configurações</Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem>Alterar empresa</DropdownMenuItem>
                                 <DropdownMenuSeparator />

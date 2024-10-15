@@ -36,9 +36,17 @@ const systemRoutes = [
 ]
 
 type User = {
-    id: string;
+    id: number;
     name: string;
-    routes: { route: string }[];
+    email: string;
+    companyId: number;
+    companyName: string;
+    routes: { 
+        id: number;
+        name: string;
+        route: string;
+        active: boolean;
+    }[];
 };
 
 type Routes = {
