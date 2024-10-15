@@ -38,6 +38,7 @@ export function CreateReceiptTypeDialog() {
         onSettled: () => queryClient.invalidateQueries({ queryKey: ['receiptTypeList'] }),
         onError: (error) => {
             toast({
+                variant: "destructive",
                 title: "Erro ao cadastrar configuração de recibo",
                 description: error?.message || "Erro desconhecido",
             })

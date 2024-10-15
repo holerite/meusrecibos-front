@@ -67,14 +67,15 @@ export function Receipt() {
         pageIndex: 0,
         pageSize: 10,
     });
-    const [filterValues, setFilterValues] = useState<IReceiptsFilterValues>(receiptsFilterDefaultValues);
+    const [filterValues, setFilterValues] = useState<IReceiptsFilterValues>({
+        ...receiptsFilterDefaultValues,
+        employee: searchParams.get("employee") || "",
+        type: searchParams.get("type") || "",
+    });
 
     const form = useForm<z.infer<typeof receiptsFilterSchema>>({
         resolver: zodResolver(receiptsFilterSchema),
-        defaultValues: {
-            ...receiptsFilterFormDefaultValues,
-            employee: searchParams.get("employee") || "",
-        },
+        defaultValues: receiptsFilterFormDefaultValues,
     });
 
     const { data, isLoading } = useQuery({
@@ -115,6 +116,10 @@ export function Receipt() {
     }
 
     function onSubmit(values: z.infer<typeof receiptsFilterSchema>) {
+        setPagination({
+            ...pagination,
+            pageIndex: 0
+        });
         setFilterValues({
             employee: values?.employee || "",
             type: values?.type === "null" ? "" : values?.type || "",
@@ -133,6 +138,7 @@ export function Receipt() {
                     <ReceiptFilter
                         form={form}
                         onSubmit={onSubmit}
+                        filterValues={filterValues}
                         setFilterValues={setFilterValues}
                         isLoading={isLoading}
                         receiptTypes={receiptQuery.data || []}

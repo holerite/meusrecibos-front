@@ -23,16 +23,25 @@ import { IReceiptType } from "@/utils/types/receipt-type";
 interface IEmployeeFilterProps {
     form: UseFormReturn<z.infer<typeof receiptsFilterSchema>>
     onSubmit: (values: z.infer<typeof receiptsFilterSchema>) => void
+    filterValues: IReceiptsFilterValues
     setFilterValues: React.Dispatch<React.SetStateAction<IReceiptsFilterValues>>
     isLoading: boolean
     receiptTypes: IReceiptType[]
 }
 
-export function ReceiptFilter({ form, onSubmit, setFilterValues, isLoading, receiptTypes }: IEmployeeFilterProps) {
+export function ReceiptFilter({ form, onSubmit, filterValues, setFilterValues, isLoading, receiptTypes }: IEmployeeFilterProps) {
+
+    function numberOfFiltersApplied() {
+        return Object.values(filterValues).filter((value) => value).length;
+    }
+
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button variant="outline">Filtros</Button>
+                <Button variant="outline">
+                    Filtros
+                    {numberOfFiltersApplied() > 0 && <> ({numberOfFiltersApplied()})</>}
+                </Button>
             </PopoverTrigger>
             <PopoverContent className="w-96">
                 <Form {...form}>

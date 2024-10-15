@@ -76,7 +76,7 @@ export function DataTable<TValue>({
                                 {isLoading ? (
                                     <>
                                         <TableRow>
-                                            <TableCell colSpan={columns.length} className="h-24 ">
+                                            <TableCell colSpan={columns.length} className="h-24">
                                                 <Loader2 size={24} className="animate-spin mx-auto" />
                                             </TableCell>
                                         </TableRow>

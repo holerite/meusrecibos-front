@@ -47,6 +47,7 @@ export function CreateUserDialog() {
         onSettled: () => queryClient.invalidateQueries({ queryKey: ['userConfig'] }),
         onError: (error) => {
             toast({
+                variant: "destructive",
                 title: "Erro ao vincular usuário",
                 description: error?.message || "Erro desconhecido",
             })

@@ -47,6 +47,7 @@ export function CreateEmployeesDialog() {
         onSettled: () => queryClient.invalidateQueries({ queryKey: ['employees'] }),
         onError: (error) => {
             toast({
+                variant: "destructive",
                 title: "Erro ao cadastrar colaborador",
                 description: error?.message || "Erro desconhecido",
             })

@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 //usado no state que vai ser enviado para a API
 export const receiptsFilterDefaultValues = {
@@ -8,7 +8,7 @@ export const receiptsFilterDefaultValues = {
     paydayTo: undefined,
     validity: "",
     opened: undefined,
-}
+};
 
 //usado no form
 export const receiptsFilterFormDefaultValues = {
@@ -20,41 +20,39 @@ export const receiptsFilterFormDefaultValues = {
     },
     validity: "",
     opened: undefined,
-}
+};
 
 export const receiptsFilterSchema = z.object({
     employee: z.string().optional(),
     type: z.string().optional(),
-    payday: z.object({
-        from: z.date().or(z.undefined()),
-        to: z.date().or(z.undefined()),
-    }).optional(),
+    payday: z
+        .object({
+            from: z.date().or(z.undefined()),
+            to: z.date().or(z.undefined()),
+        })
+        .optional(),
     validity: z.string(),
     opened: z.string().or(z.undefined()),
 });
 
 export const receiptsCreateDefaultValues = {
-    employeeId: "",
     type: "",
     payday: new Date(),
     validity: "",
-    receipt: "",
-}
+    file: "",
+};
 
 export const receiptsCreateSchema = z.object({
-    employeeId: z.string({
-        message: "O colaborador é obrigatório"
-    }),
-    type: z.string({
-        message: "O tipo é obrigatório"
+    type: z.string().min(1, {
+        message: "O tipo é obrigatório",
     }),
     payday: z.date({
-        message: "A data de pagamento é obrigatória"
+        message: "A data de pagamento é obrigatória",
     }),
-    validity: z.string({
-        message: "A data de vigência é obrigatória"
+    validity: z.string().min(1, {
+        message: "A validade é obrigatória",
     }),
-    receipt: z.string({
-        message: "O recibo é obrigatório"
+    file: z.string().min(1, {
+        message: "O arquivo é obrigatório",
     }),
 });

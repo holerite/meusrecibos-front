@@ -28,6 +28,7 @@ import { api } from "@/lib/api";
 import { queryClient } from "@/lib/query";
 import { cn } from "@/lib/utils";
 import { receiptsCreateDefaultValues, receiptsCreateSchema } from "@/utils/forms/receipt";
+import { fileToBase64 } from "@/utils/masks";
 import { IReceiptType } from "@/utils/types/receipt-type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -43,7 +44,10 @@ interface IImportReceiptDialogProps {
 }
 
 async function importReceipt(data: z.infer<typeof receiptsCreateSchema>) {
-    return (await api.post('/receipt', data));
+    return (await api.post('/receipt', {
+        ...data,
+        type: Number(data.type),
+    }));
 }
 
 export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps) {
@@ -58,9 +62,10 @@ export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps)
             setIsOpen(false);
             form.reset();
         },
-        onSettled: () => queryClient.invalidateQueries({ queryKey: ['employees'] }),
+        onSettled: () => queryClient.invalidateQueries({ queryKey: ['receipts'] }),
         onError: (error) => {
             toast({
+                variant: "destructive",
                 title: "Erro ao cadastrar colaborador",
                 description: error?.message || "Erro desconhecido",
             })
@@ -72,14 +77,28 @@ export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps)
         defaultValues: receiptsCreateDefaultValues
     });
 
-    const fileRef = form.register("receipt");
+    async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            const base64 = await fileToBase64(file);
+            form.setValue('file', base64);
+        } catch (error) {
+            let errorMessage = "Erro desconhecido";
+            if (error instanceof Error) {
+                errorMessage = error.message;
+            }
+            toast({
+                variant: "destructive",
+                title: "Erro ao carregar arquivo",
+                description: errorMessage,
+            })
+            form.setValue('file', '');
+        }
+    }
 
     function onSubmit(values: z.infer<typeof receiptsCreateSchema>) {
-        console.log(values);
-
-        // mutate({
-        //     ...values
-        // });
+        mutate(values);
     }
 
     return (
@@ -110,7 +129,7 @@ export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps)
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Todos" />
+                                                        <SelectValue placeholder="Selecione" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
@@ -193,15 +212,17 @@ export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps)
 
                                 <FormField
                                     control={form.control}
-                                    name="receipt"
-                                    render={() => {
+                                    name="file"
+                                    render={(field) => {
                                         return (
                                             <FormItem>
                                                 <FormLabel>Recibos</FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         type="file"
-                                                        {...fileRef}
+                                                        onChange={handleFileChange}
+                                                        // accept=".pdf"
+                                                        {...field}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />

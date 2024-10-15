@@ -43,6 +43,7 @@ export function EditReceiptTypeDialog({ id, name, isOpen, setIsOpen }: IEditRece
         onSettled: () => queryClient.invalidateQueries({ queryKey: ['receiptTypeList'] }),
         onError: (error) => {
             toast({
+                variant: "destructive",
                 title: "Erro ao editar configuração de recibo",
                 description: error?.message || "Erro desconhecido",
             })
