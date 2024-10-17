@@ -22,7 +22,7 @@ const formSchema = z.object({
     email: z.string().email("Endereço de email inválido."),
 });
 
-export function Login() {
+export function EmployeesLogin() {
     const navigate = useNavigate();
     const { toast } = useToast();
 
@@ -36,13 +36,13 @@ export function Login() {
     // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const { data } = await api.post("/auth/login", values);
+            const { data } = await api.post("/employees/login", values);
             api.defaults.headers.Authorization = `Bearer ${data.token}`;
             toast({
                 title: "Código de verificação enviado",
                 description: "Enviamos um email com um código de verificação. Por favor verifique sua caixa de entrada.",
             })
-            navigate("/verify");
+            navigate("/employees/verify");
         } catch (error: any) {
             toast({
                 variant: "destructive",

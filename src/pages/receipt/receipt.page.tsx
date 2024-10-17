@@ -28,6 +28,7 @@ import { receiptsFilterDefaultValues, receiptsFilterFormDefaultValues, receiptsF
 import { formatISO } from "date-fns";
 import { toIsoDate } from "@/utils/masks";
 import { IReceiptType } from "@/utils/types/receipt-type";
+import { useAuth } from "@/hooks/use-auth";
 
 
 interface IPaymentData {
@@ -59,6 +60,7 @@ async function getReceiptTypes() {
 }
 
 export function Receipt() {
+    const { user } = useAuth()
     const [searchParams] = useSearchParams()
     const [sorting, setSorting] = useState<SortingState>([]);
     const [rowSelection, setRowSelection] = useState({});
@@ -135,9 +137,6 @@ export function Receipt() {
         form.setValue("type", searchParams.get("type") || "null");
     }, [])
 
-    console.log(form.getValues());
-    
-
     return (
         <>
             <div className="flex md:flex-row flex-col items-center justify-between gap-3">
@@ -157,9 +156,11 @@ export function Receipt() {
                     >
                         Imprimir ({table.getFilteredSelectedRowModel().rows.length})
                     </Button>
-                    <ImportReceiptDialog
-                        receiptTypes={receiptQuery.data || []}
-                    />
+                    {user?.isAdmin && (
+                        <ImportReceiptDialog
+                            receiptTypes={receiptQuery.data || []}
+                        />
+                    )}
                 </div>
             </div>
             <DataTable

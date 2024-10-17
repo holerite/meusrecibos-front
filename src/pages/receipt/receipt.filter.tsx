@@ -21,6 +21,7 @@ import { UseFormReturn } from "react-hook-form";
 import { IReceiptsFilterValues } from "./receipt.page";
 import { IReceiptType } from "@/utils/types/receipt-type";
 import { useSearchParams } from "react-router-dom";
+import { useAuth } from "@/hooks/use-auth";
 interface IEmployeeFilterProps {
     form: UseFormReturn<z.infer<typeof receiptsFilterSchema>>
     onSubmit: (values: z.infer<typeof receiptsFilterSchema>) => void
@@ -32,6 +33,7 @@ interface IEmployeeFilterProps {
 
 export function ReceiptFilter({ form, onSubmit, filterValues, setFilterValues, isLoading, receiptTypes }: IEmployeeFilterProps) {
     const [, setSearchParams] = useSearchParams()
+    const { user } = useAuth();
     function numberOfFiltersApplied() {
         return Object.values(filterValues).filter((value) => value).length;
     }
@@ -50,7 +52,8 @@ export function ReceiptFilter({ form, onSubmit, filterValues, setFilterValues, i
                         onSubmit={form.handleSubmit(onSubmit)}
                     >
                         <div className="flex flex-col h-full w-full gap-3">
-                            <FormField
+                            {user?.isAdmin && (
+                                <FormField
                                 control={form.control}
                                 name="employee"
                                 render={({ field }) => (
@@ -63,6 +66,7 @@ export function ReceiptFilter({ form, onSubmit, filterValues, setFilterValues, i
                                     </FormItem>
                                 )}
                             />
+                            )}
                             <FormField
                                 control={form.control}
                                 name="type"

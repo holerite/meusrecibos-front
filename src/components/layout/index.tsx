@@ -14,16 +14,16 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { NavItem } from "./navItem"
-import { AuthContext } from "@/hooks/use-auth"
-import { useContext, useState } from "react"
+import { useState } from "react"
+import { DarkModeToggle } from "./dark-mode-toggle"
+import { useAuth } from "@/hooks/use-auth"
 
 type LayoutProps = {
     children: React.ReactNode
 }
 
-
 export function Layout({ children }: LayoutProps) {
-    const { routes, signOut, user } = useContext(AuthContext)
+    const { routes, signOut, user } = useAuth();
     const [open, setOpen] = useState(false);
 
     return (
@@ -44,7 +44,7 @@ export function Layout({ children }: LayoutProps) {
                 </div>
             </div>
             <div className="flex flex-col">
-                <header className="flex h-14 items-center gap-4 border-b bg-white px-4 lg:h-[60px] lg:px-6 fixed w-screen lg:w-[calc(100vw-250px)] z-20">
+                <header className="flex h-14 items-center gap-4 border-b dark:bg-[#171413] bg-[#fbfbfb] px-4 lg:h-[60px] lg:px-6 fixed w-screen lg:w-[calc(100vw-250px)] z-20">
                     <Sheet
                         open={open}
                         onOpenChange={setOpen}
@@ -66,6 +66,7 @@ export function Layout({ children }: LayoutProps) {
                         </SheetContent>
                     </Sheet>
                     <div className="w-full flex-1 items-end flex justify-end gap-4">
+                        <DarkModeToggle />
                         <div className="flex flex-col">
                             <h1 className="text-primary text-sm font-medium">{user?.name || "Não informado"}</h1>
                             <p className="text-secondary-foreground text-xs">{user?.companyName || ""}</p>
@@ -92,8 +93,8 @@ export function Layout({ children }: LayoutProps) {
                         </DropdownMenu>
                     </div>
                 </header>
-                <main className="overflow-x-hidden w-screen lg:w-full pt-14 lg:pt-[60px]">
-                    <div className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+                <main className="overflow-x-hidden w-screen lg:w-full h-full pt-14 lg:pt-[60px]">
+                    <div className="flex flex-1 flex-col gap-4 h-full p-4 lg:gap-6 lg:p-6">
                         {children}
                     </div>
                 </main>

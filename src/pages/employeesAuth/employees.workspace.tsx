@@ -10,12 +10,12 @@ interface ICompany {
     role?: string;
 }
 
-export function Workspace() {
+export function EmployeesWorkspace() {
     const { signIn, loading } = useAuth();
     const [companies, setCompanies] = useState<ICompany[]>([]);
 
     function selectWorkspace(id: number) {
-        signIn(id);
+        signIn(id, true);
     }
 
     useEffect(() => {

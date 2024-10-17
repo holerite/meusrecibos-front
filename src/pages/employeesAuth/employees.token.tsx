@@ -24,7 +24,7 @@ const formSchema = z.object({
     }),
 });
 
-export function Token() {
+export function EmployeesToken() {
     const navigate = useNavigate();
     const { toast } = useToast();
 
@@ -38,12 +38,12 @@ export function Token() {
     // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const { data } = await api.post("/auth/signIn", values);
+            const { data } = await api.post("/employees/signIn", values);
             toast({
                 title: "Login efetuado com sucesso",
             });
             localStorage.setItem("meusrecibos:companies", JSON.stringify(data.companies));
-            navigate("/workspace");
+            navigate("/employees/workspace");
         } catch (error: any) {
             toast({
                 variant: "destructive",
