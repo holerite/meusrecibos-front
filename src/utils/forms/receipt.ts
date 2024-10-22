@@ -39,7 +39,7 @@ export const receiptsCreateDefaultValues = {
     type: "",
     payday: new Date(),
     validity: "",
-    file: "",
+    // files: null,
 };
 
 export const receiptsCreateSchema = z.object({
@@ -52,7 +52,9 @@ export const receiptsCreateSchema = z.object({
     validity: z.string().min(1, {
         message: "A validade é obrigatória",
     }),
-    file: z.string().min(1, {
+    files: z.instanceof(FileList, {
         message: "O arquivo é obrigatório",
-    }),
+    }).or(z.string().min(1, {
+        message: "O arquivo é obrigatório",
+    })),
 });

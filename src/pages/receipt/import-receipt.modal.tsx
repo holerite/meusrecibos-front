@@ -1,3 +1,4 @@
+import fs from "fs";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -28,7 +29,7 @@ import { api } from "@/lib/api";
 import { queryClient } from "@/lib/query";
 import { cn } from "@/lib/utils";
 import { receiptsCreateDefaultValues, receiptsCreateSchema } from "@/utils/forms/receipt";
-import { fileToBase64 } from "@/utils/masks";
+import { validateFiles } from "@/utils/masks";
 import { IReceiptType } from "@/utils/types/receipt-type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -44,10 +45,15 @@ interface IImportReceiptDialogProps {
 }
 
 async function importReceipt(data: z.infer<typeof receiptsCreateSchema>) {
-    return (await api.post('/receipt', {
-        ...data,
-        type: Number(data.type),
-    }));
+    const formData = new FormData();
+    formData.append('type', data.type);
+    formData.append('validity', data.validity);
+    formData.append('payday', data.payday.toISOString());
+    Array.from(data.files as FileList).forEach((file) => {
+        formData.append('files', file);
+    });
+
+    return (await api.post('/receipt', formData)).data;
 }
 
 export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps) {
@@ -57,7 +63,7 @@ export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps)
         mutationFn: importReceipt,
         onSuccess: () => {
             toast({
-                title: "Colaborador cadastrado com sucesso",
+                title: "Recibos importados com sucesso",
             })
             setIsOpen(false);
             form.reset();
@@ -66,7 +72,7 @@ export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps)
         onError: (error) => {
             toast({
                 variant: "destructive",
-                title: "Erro ao cadastrar colaborador",
+                title: "Erro ao importar recibos",
                 description: error?.message || "Erro desconhecido",
             })
         }
@@ -77,12 +83,12 @@ export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps)
         defaultValues: receiptsCreateDefaultValues
     });
 
-    async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const file = e.target.files?.[0];
-        if (!file) return;
+    function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        if (!e.target.files) return;
+        let files = e.target.files;
         try {
-            const base64 = await fileToBase64(file);
-            form.setValue('file', base64);
+            validateFiles(files);
+            form.setValue('files', files);
         } catch (error) {
             let errorMessage = "Erro desconhecido";
             if (error instanceof Error) {
@@ -93,11 +99,12 @@ export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps)
                 title: "Erro ao carregar arquivo",
                 description: errorMessage,
             })
-            form.setValue('file', '');
+            form.setValue('files', "");
         }
     }
 
     function onSubmit(values: z.infer<typeof receiptsCreateSchema>) {
+        console.log(values);
         mutate(values);
     }
 
@@ -212,7 +219,7 @@ export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps)
 
                                 <FormField
                                     control={form.control}
-                                    name="file"
+                                    name="files"
                                     render={(field) => {
                                         return (
                                             <FormItem>
@@ -221,7 +228,8 @@ export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps)
                                                     <Input
                                                         type="file"
                                                         onChange={handleFileChange}
-                                                        // accept=".pdf"
+                                                        accept=".pdf"
+                                                        multiple
                                                         {...field}
                                                     />
                                                 </FormControl>
