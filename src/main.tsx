@@ -8,6 +8,7 @@ import "./global.css";
 import { Toaster } from "./components/ui/toaster.tsx";
 import { queryClient } from "./lib/query.ts";
 import { ThemeProvider } from "./providers/theme-provider.tsx";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 // biome-ignore lint/style/noNonNullAssertion: It's okay to use non-null assertion here because we know that the element with the ID "root" exists.
 createRoot(document.getElementById("root")!).render(
@@ -21,6 +22,7 @@ createRoot(document.getElementById("root")!).render(
                     </AuthProvider>
                 </ThemeProvider>
             </BrowserRouter>
+            <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
     </StrictMode>,
 );

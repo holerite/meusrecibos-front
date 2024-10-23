@@ -56,7 +56,7 @@ export function Token() {
     return (
         <AuthLayout
             title="Verifique seu email"
-            description="Enviamos um email para <strong>email</strong> com um código de login. Por favor verifique sua caixa de entrada e insira o código abaixo."
+            description="Enviamos um email com um código de login. Por favor verifique sua caixa de entrada e insira o código abaixo."
         >
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

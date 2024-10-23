@@ -4,7 +4,7 @@ import { Loader2Icon } from "lucide-react";
 import { AuthLayout } from "@/components/layout/auth";
 import { useAuth } from "@/hooks/use-auth";
 
-interface ICompany {
+export interface ICompany {
     id: number;
     name: string;
     role?: string;

@@ -42,7 +42,7 @@ type User = {
     companyId: number;
     companyName: string;
     isAdmin: boolean;
-    routes: { 
+    routes: {
         id: number;
         name: string;
         route: string;
@@ -60,6 +60,7 @@ type Routes = {
 type IAuthContextData = {
     signOut: () => void;
     signIn: (id: number, isEmployee?: boolean) => void;
+    changeCompany: (id: number) => void;
     user?: User | null;
     routes: Routes[];
     loading: boolean
@@ -91,13 +92,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async function signOut() {
         const url = user?.isAdmin ? "/" : "/employees";
         setUser(null);
-        setRoutes([]);
+        await api.post("/auth/logout");
+        navigate(url);
         localStorage.removeItem('@meusrecibos:user');
         localStorage.removeItem('@meusrecibos:accessToken');
         localStorage.removeItem('@meusrecibos:refreshToken');
-        await api.post("/auth/logout");
-        navigate(url);
+        setRoutes([]);
     }
+
 
     async function signIn(id: number, isEmployee = false) {
         setLoading(true)
@@ -109,13 +111,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             toast({
                 title: "Login efetuado com sucesso"
             })
-            handleRoutes(data.user)
-            setUser(data.user);
-            api.defaults.headers.Authorization = `Bearer ${data.accessToken}`;
-            localStorage.setItem('@meusrecibos:user', JSON.stringify(data.user));
-            localStorage.setItem('@meusrecibos:accessToken', JSON.stringify(data.accessToken));
-            localStorage.setItem('@meusrecibos:refreshToken', JSON.stringify(data.refreshToken));
-            navigate(isEmployee ? '/receipt' : '/')
+            savingData(data)
+            navigate(data.user.isAdmin ? '/' : '/receipt')
         } catch (error: any) {
             toast({
                 variant: "destructive",
@@ -125,6 +122,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } finally {
             setLoading(false)
         }
+
+    }
+
+    async function changeCompany(id: number) {
+        try {
+            const url = user?.isAdmin ? "/auth/change-company" : "/employees/change-company";
+            const { data } = await api.post(url, {
+                companyId: id
+            });
+            toast({
+                title: "Empresa alterada com sucesso"
+            })
+            savingData(data)
+            window.location.reload()
+        } catch (error: any) {
+            toast({
+                variant: "destructive",
+                title: "Erro ao alterar empresa",
+                description: error.response?.data?.message || "Tente novamente mais tarde",
+            })
+        }
+
+    }
+
+
+    function savingData(data: any) {
+        handleRoutes(data.user)
+        setUser(data.user);
+        api.defaults.headers.Authorization = `Bearer ${data.accessToken}`;
+        localStorage.setItem('@meusrecibos:user', JSON.stringify(data.user));
+        localStorage.setItem('@meusrecibos:accessToken', JSON.stringify(data.accessToken));
+        localStorage.setItem('@meusrecibos:refreshToken', JSON.stringify(data.refreshToken));
 
     }
 
@@ -146,7 +175,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <AuthContext.Provider value={{
-            signIn, signOut, user, routes, loading
+            signIn, signOut, user, routes, loading, changeCompany
         }}>
             {children}
         </AuthContext.Provider>
