@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import type { ColumnDef } from "@tanstack/react-table"
-import { format, formatDate, getMonth } from 'date-fns'
-import { MailIcon, MailOpenIcon, MoreHorizontalIcon, MoreVerticalIcon } from "lucide-react"
+import { format, formatDate } from 'date-fns'
+import { MoreVerticalIcon } from "lucide-react"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
