@@ -1,6 +1,6 @@
 import { DataTable } from "./recepit.table.data-table";
 import { columns, PaymentDTO } from "./receipt.columns";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +29,8 @@ import { formatISO } from "date-fns";
 import { toIsoDate } from "@/utils/masks";
 import { IReceiptType } from "@/utils/types/receipt-type";
 import { useAuth } from "@/hooks/use-auth";
+import { toast } from "@/hooks/use-toast";
+import { Loader2Icon } from "lucide-react";
 
 
 interface IPaymentData {
@@ -45,6 +47,7 @@ export interface IReceiptsFilterValues {
     opened?: string
 }
 
+
 async function getData(data: IReceiptsFilterValues, pagination: ITablePagination) {
     return (await api.get<IPaymentData>("/receipt", {
         params: {
@@ -59,12 +62,21 @@ async function getReceiptTypes() {
     return (await api.get<IReceiptType[]>("/receipt/type")).data;
 }
 
+async function getReceiptById(id: number) {
+    return (await api.get<string>(`/receipt/file?receiptId=${id}`)).data;
+}
+
 export function Receipt() {
     const { user } = useAuth()
     const [searchParams] = useSearchParams()
     const [sorting, setSorting] = useState<SortingState>([]);
     const [rowSelection, setRowSelection] = useState({});
+
     const [printOpenDialog, setOpenPrintDialog] = useState(false);
+
+    const [showReceiptDialogOpen, setShowReceiptDialogOpen] = useState(false);
+    const [showReceiptSrc, setShowReceiptSrc] = useState<string>("");
+
     const [pagination, setPagination] = useState<ITablePagination>({
         pageIndex: 0,
         pageSize: 10,
@@ -90,6 +102,21 @@ export function Receipt() {
         queryFn: getReceiptTypes,
     });
 
+    const receiptMutation = useMutation({
+        mutationKey: ['showReceipt'],
+        mutationFn: getReceiptById,
+        onSuccess: (data) => {
+            setShowReceiptSrc(data);
+        },
+        onError: (error) => {
+            toast({
+                variant: "destructive",
+                title: "Erro ao buscar recibo",
+                description: error?.message || "Erro desconhecido",
+            })
+        }
+    });
+
     const table = useReactTable({
         data: data?.receipts || [],
         columns,
@@ -109,12 +136,18 @@ export function Receipt() {
         },
         meta: {
             onPrint: onPrint,
+            onShowReceipt: onShowReceipt,
         },
     });
 
     function onPrint(data: string[]) {
         console.log(data);
-        setOpenPrintDialog(true);
+        // setOpenPrintDialog(true);
+    }
+
+    function onShowReceipt(id: number) {
+        setShowReceiptDialogOpen(true);
+        receiptMutation.mutate(id)
     }
 
     function onSubmit(values: z.infer<typeof receiptsFilterSchema>) {
@@ -170,6 +203,27 @@ export function Receipt() {
                 table={table}
                 totalRecords={data?.pagination.total_records || 0}
             />
+
+            {/* Dialog to show receipt */}
+            <Dialog
+                open={showReceiptDialogOpen}
+                onOpenChange={(open) => setShowReceiptDialogOpen(open)}
+            >
+                <DialogContent className="max-w-[80%] h-[90%] overflow-y-auto flex flex-col">
+                    <DialogHeader className="mb-4">
+                        <DialogTitle>Recibo</DialogTitle>
+                    </DialogHeader>
+                    {receiptMutation.isPending ? (
+                        <div className="flex justify-center items-center h-full">
+                            <Loader2Icon className="w-10 h-10 animate-spin" />
+                        </div>
+                    ) : (
+                        <iframe src={showReceiptSrc} className="w-full h-full" />
+                    )}
+                </DialogContent>
+            </Dialog>
+
+            {/* Dialog to print */}
             <Dialog
                 open={printOpenDialog}
                 onOpenChange={(open) => setOpenPrintDialog(open)}

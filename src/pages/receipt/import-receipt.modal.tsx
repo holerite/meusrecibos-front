@@ -1,4 +1,3 @@
-import fs from "fs";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -33,7 +32,7 @@ import { validateFiles } from "@/utils/masks";
 import { IReceiptType } from "@/utils/types/receipt-type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { addHours, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
@@ -47,7 +46,7 @@ interface IImportReceiptDialogProps {
 async function importReceipt(data: z.infer<typeof receiptsCreateSchema>) {
     const formData = new FormData();
     formData.append('type', data.type);
-    formData.append('validity', data.validity);
+    formData.append('validity', addHours(new Date(data.validity), 3).toISOString());
     formData.append('payday', data.payday.toISOString());
     Array.from(data.files as FileList).forEach((file) => {
         formData.append('files', file);

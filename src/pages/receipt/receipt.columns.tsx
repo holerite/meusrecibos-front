@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import type { ColumnDef } from "@tanstack/react-table"
-import { format } from 'date-fns'
-import { Eye, MailIcon, MailOpenIcon } from "lucide-react"
+import { format, formatDate, getMonth } from 'date-fns'
+import { MailIcon, MailOpenIcon, MoreHorizontalIcon, MoreVerticalIcon } from "lucide-react"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -63,41 +64,52 @@ export const columns: ColumnDef<PaymentDTO>[] = [
     {
         accessorKey: "payday",
         header: "Data de pagamento",
-        cell: ({ row }) => (
-            <>
-                {format(new Date(row.original.payday), 'dd/MM/yyyy')}
-            </>
-        ),
+        cell: ({ row }) => format(new Date(row.original.payday), 'dd/MM/yyyy'),
     },
     {
         accessorKey: "validity",
         header: "Data de vigência",
-        cell: ({ row }) => (
-            <Button size={"sm"} >
-                {new Date(row.original.validity).getMonth() + 1} - {new Date(row.original.validity).getFullYear()}
-            </Button>
-        ),
-
+        cell: ({ row }) => formatDate(new Date(row.original.validity), 'MM/yyyy'),
     },
     {
         accessorKey: "opened",
-        header: () => (
-            <Eye className="w-5 h-5" />
-        ),
+        header: "Ações",
         cell: ({ table, row }) => {
+            const handleShowReceipt = () => {
+                (table.options.meta as any)?.onShowReceipt(row.original.id)
+            }
+
             const handlePrint = () => {
                 (table.options.meta as any)?.onPrint([row.original.id])
             }
 
             return (
-                <button onClick={handlePrint} type="button">
-                    {row.original.opened ? <MailOpenIcon className="w-5 h-5  text-gray-400" /> : <MailIcon className="w-5 h-5" />}
-                </button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreVerticalIcon className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                        <DropdownMenuItem
+                            onClick={handleShowReceipt}
+                        >
+                            Visualizar recibo
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={handlePrint}
+                        >
+                            Imprimir comprovante
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             )
         },
         enableSorting: false,
         enableHiding: false,
-        
+
     },
 ]
 
