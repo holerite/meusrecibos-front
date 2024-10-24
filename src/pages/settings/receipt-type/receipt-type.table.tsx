@@ -21,13 +21,15 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data?: TData[]
     handleEdit: (id: number, name: string) => void
+    handleDelete: (id: number) => void
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
     isLoading,
-    handleEdit
+    handleEdit,
+    handleDelete,
 }: DataTableProps<TData, TValue>) {
     const table = useReactTable({
         data: data || [],
@@ -35,6 +37,7 @@ export function DataTable<TData, TValue>({
         getCoreRowModel: getCoreRowModel(),
         meta: {
             onEdit: handleEdit,
+            onDelete: handleDelete,
         }
     })
 
