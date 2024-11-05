@@ -9,9 +9,7 @@ import { MoreVerticalIcon } from "lucide-react"
 // You can use a Zod schema here if you want.
 export type PaymentDTO = {
     id: string
-    employee: {
-        name: string
-    }
+    name: string
     ReceiptsTypes: {
         name: string
     }
@@ -48,7 +46,7 @@ export const columns: ColumnDef<PaymentDTO>[] = [
         header: "Colaborador",
         cell: ({ row }) => (
             <>
-                {row.original?.employee?.name || "Sem colaborador"}
+                {row.original?.name || "Sem colaborador"}
             </>
         ),
     },

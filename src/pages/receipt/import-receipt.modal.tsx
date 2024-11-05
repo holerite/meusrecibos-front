@@ -207,6 +207,7 @@ export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps)
                                                             onSelect={field.onChange}
                                                             initialFocus
                                                             locale={ptBR}
+                                                            
                                                         />
                                                     </PopoverContent>
                                                 </Popover>

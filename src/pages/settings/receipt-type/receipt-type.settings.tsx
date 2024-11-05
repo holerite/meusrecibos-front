@@ -2,54 +2,47 @@ import { columns, ReceiptTypeDto } from "./receipt-type.columns";
 import { DataTable } from "./receipt-type.table";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { CreateReceiptTypeDialog } from "./receipt-type.create";
-import { EditReceiptTypeDialog } from "./receipt-type.edit";
-import { useState } from "react";
-import { queryClient } from "@/lib/query";
 import { toast } from "@/hooks/use-toast";
-import { DeleteReceiptTypeAlert } from "./receipt-type.delete";
+import { queryClient } from "@/lib/query";
+import { useState } from "react";
+
 
 async function getData() {
-    return (await api.get<ReceiptTypeDto[]>('/receipt/type')).data;
+    return (await api.get<ReceiptTypeDto[]>('/receipt/type?all=true')).data;
 }
 
-async function deleteData(id: number) {
-    return await api.delete(`/receipt/type/${id}`)
+async function editReceiptType(values: { id: number, status: boolean }) {
+    return await api.put(`/receipt/type`, {
+        id: values.id,
+        active: values.status
+    });
 }
 
 export function ReceiptTypeSettings() {
     const { data, isLoading } = useQuery({ queryKey: ['receiptTypeList'], queryFn: getData })
-    const [receiptType, setReceiptType] = useState<ReceiptTypeDto>({
-        id: 0,
-        name: '',
-    })
-    const [editReceiptTypeDialogOpen, setEditReceiptTypeDialogOpen] = useState(false)
-    const [deleteAlertOpen, setDeleteAlertOpen] = useState(false)
-    const [deleteId, setDeleteId] = useState(0)
+    const [changeStatusId, setChangeStatusId] = useState<number>()
 
-    function handleEdit(id: number, name: string) {
-        setReceiptType({
-            id,
-            name,
-        })
-        setEditReceiptTypeDialogOpen(true)
-    }
-
-    const deleteMutation = useMutation({
-        mutationKey: ['deleteReceiptType'],
-        mutationFn: (id: number) => deleteData(id),
-        onSettled: () => queryClient.invalidateQueries({ queryKey: ['receiptTypeList'] }),
+    const { mutate, isPending } = useMutation({
+        mutationKey: ['receiptTypeEdit'],
+        mutationFn: editReceiptType,
         onSuccess: () => {
-            setDeleteAlertOpen(false);
             toast({
-                title: "Descrição de recibo deletada com sucesso",
+                title: "Configuração de recibo editado com sucesso",
             })
         },
+        onSettled: () => queryClient.invalidateQueries({ queryKey: ['receiptTypeList'] }),
+        onError: (error) => {
+            toast({
+                variant: "destructive",
+                title: "Erro ao editar configuração de recibo",
+                description: error?.message || "Erro desconhecido",
+            })
+        }
     })
 
-    function handleDelete(id: number) {
-        setDeleteId(id);
-        setDeleteAlertOpen(true);
+    const handleChangeStatus = (id: number, status: boolean) => {
+        setChangeStatusId(id)
+        mutate({ id, status })
     }
 
     return (
@@ -57,28 +50,18 @@ export function ReceiptTypeSettings() {
             <div className="flex flex-col gap-4 lg:gap-6">
                 <div className="flex md:flex-row flex-col items-center justify-between gap-3">
                     <h1 className="text-3xl font-semibold">Descrições de Recibos</h1>
-                    <CreateReceiptTypeDialog />
                 </div>
                 <DataTable
                     columns={columns}
                     data={data}
                     isLoading={isLoading}
-                    handleEdit={handleEdit}
-                    handleDelete={handleDelete}
+                    handleChangeStatus={handleChangeStatus}
+                    loadingIdentifier={{
+                        isLoading: isPending,
+                        id: changeStatusId
+                    }}
                 />
             </div>
-            <EditReceiptTypeDialog 
-                id={receiptType.id}
-                name={receiptType.name}
-                isOpen={editReceiptTypeDialogOpen}
-                setIsOpen={setEditReceiptTypeDialogOpen}
-            />
-            <DeleteReceiptTypeAlert
-                open={deleteAlertOpen}
-                setOpen={setDeleteAlertOpen}
-                loading={deleteMutation.isPending}
-                handleDelete={() => deleteMutation.mutate(deleteId)}
-            />
         </>
     )
 }

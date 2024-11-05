@@ -15,29 +15,34 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Loader2Icon } from "lucide-react"
+import { ReceiptTypeDto } from "./receipt-type.columns"
+
 
 interface DataTableProps<TData, TValue> {
     isLoading: boolean
     columns: ColumnDef<TData, TValue>[]
     data?: TData[]
-    handleEdit: (id: number, name: string) => void
-    handleDelete: (id: number) => void
+    loadingIdentifier: {
+        isLoading: boolean
+        id: number | undefined
+    }
+    handleChangeStatus: (id: number, status: boolean) => void
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TValue>({
     columns,
     data,
     isLoading,
-    handleEdit,
-    handleDelete,
-}: DataTableProps<TData, TValue>) {
+    handleChangeStatus,
+    loadingIdentifier
+}: DataTableProps<ReceiptTypeDto, TValue>) {
     const table = useReactTable({
         data: data || [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         meta: {
-            onEdit: handleEdit,
-            onDelete: handleDelete,
+            onChangeStatus: handleChangeStatus,
+            loadingIdentifier
         }
     })
 
@@ -64,36 +69,40 @@ export function DataTable<TData, TValue>({
                 </TableHeader>
                 <TableBody>
                     {table.getRowModel().rows?.length ? (
-                        table.getRowModel().rows.map((row) => (
-                            <TableRow
-                                key={row.id}
-                                data-state={row.getIsSelected() && "selected"}
-                            >
-                                {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id} className="truncate max-w-40">
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        ))
+                        table.getRowModel().rows.map((row) => {
+                            console.log(row);
+
+                            return (
+                                <TableRow
+                                    key={row.id}
+                                    data-state={row.getIsSelected() && "selected"}
+                                >
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id} className="truncate max-w-40">
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            )
+                        })
                     ) : (
-                    <>
-                        {isLoading ? (<>
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 ">
-                                    <Loader2Icon size={24} className="animate-spin mx-auto" />
-                                </TableCell>
-                            </TableRow>
-                        </>) : (
-                            <>
+                        <>
+                            {isLoading ? (<>
                                 <TableRow>
-                                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                                        Sem resultados.
+                                    <TableCell colSpan={columns.length} className="h-24 ">
+                                        <Loader2Icon size={24} className="animate-spin mx-auto" />
                                     </TableCell>
                                 </TableRow>
-                            </>
-                        )}
-                    </>)}
+                            </>) : (
+                                <>
+                                    <TableRow>
+                                        <TableCell colSpan={columns.length} className="h-24 text-center">
+                                            Sem resultados.
+                                        </TableCell>
+                                    </TableRow>
+                                </>
+                            )}
+                        </>)}
                 </TableBody>
             </Table>
         </div>

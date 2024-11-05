@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
 import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Edit2Icon, Trash2Icon } from "lucide-react"
-
+import { ArrowUpDown } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 export type ReceiptTypeDto = {
     id: number
     name: string
+    active: boolean
 }
 
 
@@ -30,34 +32,20 @@ export const columns: ColumnDef<ReceiptTypeDto>[] = [
         enableHiding: false,
         enableResizing: false,
         cell: ({ table, row }) => {
-            const handleEdit = () => {
-                (table.options.meta as any)?.onEdit(Number(row.original.id) || 0, row.original.name || "")
-            }
-
-            const handleDelete = () => {
-                (table.options.meta as any)?.onDelete(Number(row.original.id) || 0)
+            const handleChangeStatus = (status: boolean) => {
+                (table.options.meta as any)?.onChangeStatus(Number(row.original.id) || 0, status || false)
             }
 
             return (
                 <div className="flex gap-2">
-                    <Button
-                        size={"icon"}
-                        variant={"default"}
-                        onClick={handleEdit}
-                    >
-                        <Edit2Icon
-                            className="h-4 w-4"
+                    {(table.options.meta as any)?.loadingIdentifier.id === row.original.id && (table.options.meta as any)?.loadingIdentifier.isLoading ? (
+                        <Skeleton className="h-6 w-11" />
+                    ) : (
+                        <Switch
+                            onCheckedChange={handleChangeStatus}
+                            checked={row.original.active || false}
                         />
-                    </Button>
-                    <Button
-                        size={"icon"}
-                        variant={"destructive"}
-                        onClick={handleDelete}
-                    >
-                        <Trash2Icon
-                            className="w-4 h-4"
-                        />
-                    </Button>
+                    )}
                 </div>
 
             )
