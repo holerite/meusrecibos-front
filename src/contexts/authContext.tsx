@@ -92,11 +92,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async function signOut() {
         const url = user?.isAdmin ? "/" : "/employees";
         setUser(null);
-        await api.post("/auth/logout");
-        navigate(url);
         localStorage.removeItem('@meusrecibos:user');
         localStorage.removeItem('@meusrecibos:accessToken');
         localStorage.removeItem('@meusrecibos:refreshToken');
+        await api.post("/auth/logout");
+        navigate(url);
         setRoutes([]);
     }
 
@@ -112,6 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 title: "Login efetuado com sucesso"
             })
             savingData(data)
+            localStorage.removeItem('@meusrecibos:companies');
             navigate(data.user.isAdmin ? '/' : '/receipt')
         } catch (error: any) {
             toast({
