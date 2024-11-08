@@ -10,6 +10,7 @@ import { IDataPagination, ITablePagination } from "@/utils/types/table";
 import { CreateEmployeesDialog } from "./employees.create";
 import { EmployeesFilter } from "./employees.filter";
 import { employeesFilterDefaultValues, employeesFilterSchema } from "@/utils/forms/employees";
+import { Button } from "@/components/ui/button";
 
 
 interface IEmployeesData {
@@ -34,7 +35,7 @@ export function Employees() {
         pageSize: 10,
     });
     const [filterValues, setFilterValues] = useState<z.infer<typeof employeesFilterSchema>>(employeesFilterDefaultValues);
-
+    const [addEmployeeIsOpen, setAddEmployeeIsOpen] = useState(false)
     const filterForm = useForm<z.infer<typeof employeesFilterSchema>>({
         resolver: zodResolver(employeesFilterSchema),
         defaultValues: employeesFilterDefaultValues,
@@ -49,6 +50,10 @@ export function Employees() {
         setFilterValues(values);
     }
 
+    function handleAddEmployee() {
+        setAddEmployeeIsOpen(true)
+    }
+
     return (
         <>
             <div className="flex md:flex-row flex-col items-center justify-between gap-3">
@@ -60,7 +65,9 @@ export function Employees() {
                         setFilterValues={setFilterValues}
                         isLoading={isLoading}
                     />
-                    <CreateEmployeesDialog />
+                    <Button onClick={handleAddEmployee}>
+                        Cadastrar colaborador
+                    </Button>
                 </div>
             </div>
             <DataTable
@@ -71,6 +78,11 @@ export function Employees() {
                 setPagination={setPagination}
                 pageCount={data?.pagination.total_pages || 0}
                 totalRecords={data?.pagination.total_records || 0}
+            />
+            <CreateEmployeesDialog
+                employee={undefined}
+                isOpen={addEmployeeIsOpen}
+                setIsOpen={setAddEmployeeIsOpen}
             />
         </>
     );

@@ -5,7 +5,6 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog";
 import {
     Form,
@@ -20,20 +19,26 @@ import { toast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { cpfMask, removeMask } from "@/utils/masks";
 import { queryClient } from "@/lib/query";
 import { employeesCreateSchema, employeesCreateFormDefaultValues } from "@/utils/forms/employees";
+import { PendingEmployeeDto } from "../settings/pending-employees/pending-employee.columns";
 
 
 async function createEmployees(data: z.infer<typeof employeesCreateSchema>) {
     return (await api.post('/employees', data));
 }
 
-export function CreateEmployeesDialog() {
-    const [isOpen, setIsOpen] = useState(false);
+interface ICreateEmployeesDialogProps {
+    employee?: PendingEmployeeDto
+    isOpen: boolean
+    setIsOpen: (isOpen: boolean) => void
+}
+
+export function CreateEmployeesDialog({ employee, isOpen, setIsOpen }: ICreateEmployeesDialogProps) {
     const { mutate, isPending } = useMutation({
         mutationKey: ['createEmployees'],
         mutationFn: createEmployees,
@@ -66,15 +71,18 @@ export function CreateEmployeesDialog() {
         });
     }
 
+    useEffect(() => {
+        if (employee) {
+            form.setValue('name', employee.name)
+            form.setValue('enrolment', employee.enrolment)
+        }
+    }, [employee])
+
     return (
         <Dialog
             open={isOpen}
             onOpenChange={setIsOpen}
-            
         >
-            <DialogTrigger asChild>
-                <Button>Cadastrar colaborador</Button>
-            </DialogTrigger>
             <DialogContent aria-describedby="Cadastrar colaborador">
                 <DialogHeader>
                     <DialogTitle>Cadastrar colaborador</DialogTitle>
@@ -90,7 +98,10 @@ export function CreateEmployeesDialog() {
                                 <FormItem>
                                     <FormLabel>Nome</FormLabel>
                                     <FormControl>
-                                        <Input {...field} />
+                                        <Input 
+                                            {...field}
+                                            disabled={!!employee}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -137,7 +148,10 @@ export function CreateEmployeesDialog() {
                                 <FormItem>
                                     <FormLabel>Matrícula</FormLabel>
                                     <FormControl>
-                                        <Input {...field} />
+                                        <Input 
+                                            {...field}
+                                            disabled={!!employee}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

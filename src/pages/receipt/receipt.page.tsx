@@ -31,6 +31,7 @@ import { IReceiptType } from "@/utils/types/receipt-type";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
 import { Loader2Icon } from "lucide-react";
+import { PendingEmployeeDialog } from "./pending-employee.modal";
 
 
 interface IPaymentData {
@@ -73,6 +74,7 @@ export function Receipt() {
     const [rowSelection, setRowSelection] = useState({});
 
     const [printOpenDialog, setOpenPrintDialog] = useState(false);
+    const [pendingEmployeeDialogOpen, setPendingEmployeeDialogOpen] = useState(false);
 
     const [showReceiptDialogOpen, setShowReceiptDialogOpen] = useState(false);
     const [showReceiptSrc, setShowReceiptSrc] = useState<string>("");
@@ -192,6 +194,7 @@ export function Receipt() {
                     {user?.isAdmin && (
                         <ImportReceiptDialog
                             receiptTypes={receiptQuery.data || []}
+                            setPendingEmployeeDialogOpen={setPendingEmployeeDialogOpen}
                         />
                     )}
                 </div>
@@ -235,6 +238,11 @@ export function Receipt() {
                     <iframe src={""} className="w-full h-full" />
                 </DialogContent>
             </Dialog>
+
+            <PendingEmployeeDialog 
+                isOpen={pendingEmployeeDialogOpen}
+                setIsOpen={setPendingEmployeeDialogOpen}
+            />
         </>
     );
 }

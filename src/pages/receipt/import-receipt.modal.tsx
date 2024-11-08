@@ -41,6 +41,7 @@ import { z } from "zod";
 
 interface IImportReceiptDialogProps {
     receiptTypes: IReceiptType[]
+    setPendingEmployeeDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 async function importReceipt(data: z.infer<typeof receiptsCreateSchema>) {
@@ -55,16 +56,19 @@ async function importReceipt(data: z.infer<typeof receiptsCreateSchema>) {
     return (await api.post('/receipt', formData)).data;
 }
 
-export function ImportReceiptDialog({ receiptTypes }: IImportReceiptDialogProps) {
+export function ImportReceiptDialog({ receiptTypes, setPendingEmployeeDialogOpen }: IImportReceiptDialogProps) {
     const [isOpen, setIsOpen] = useState(false);
     const { mutate, isPending } = useMutation({
         mutationKey: ['importReceipt'],
         mutationFn: importReceipt,
-        onSuccess: () => {
+        onSuccess: (response) => {
             toast({
                 title: "Recibos importados com sucesso",
             })
             setIsOpen(false);
+            if (response.pendingEmployees) {
+                setPendingEmployeeDialogOpen(true);
+            }
             form.reset();
         },
         onSettled: () => queryClient.invalidateQueries({ queryKey: ['receipts'] }),

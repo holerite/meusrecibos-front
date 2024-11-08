@@ -19,7 +19,7 @@ export function EmployeesWorkspace() {
     }
 
     useEffect(() => {
-        const companies = JSON.parse(localStorage.getItem("meusrecibos:companies") || "[]") as ICompany[];
+        const companies = JSON.parse(localStorage.getItem("@meusrecibos:companies") || "[]") as ICompany[];
         setCompanies(companies);
     }, []);
 

@@ -42,7 +42,7 @@ export function Token() {
             toast({
                 title: "Login efetuado com sucesso",
             });
-            localStorage.setItem("meusrecibos:companies", JSON.stringify(data.companies));
+            localStorage.setItem("@meusrecibos:companies", JSON.stringify(data.companies));
             navigate("/workspace");
         } catch (error: any) {
             toast({

@@ -42,7 +42,7 @@ export function EmployeesToken() {
             toast({
                 title: "Login efetuado com sucesso",
             });
-            localStorage.setItem("meusrecibos:companies", JSON.stringify(data.companies));
+            localStorage.setItem("@meusrecibos:companies", JSON.stringify(data.companies));
             navigate("/employees/workspace");
         } catch (error: any) {
             toast({
