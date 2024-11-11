@@ -5,7 +5,10 @@ import { ArrowUpDown, PlusIcon } from "lucide-react"
 export type PendingEmployeeDto = {
     id: number
     name: string
-    enrolment: string
+    enrolment: {
+        enrolment: string
+        id: number
+    }
 }
 
 export const columns: ColumnDef<PendingEmployeeDto>[] = [
@@ -27,6 +30,9 @@ export const columns: ColumnDef<PendingEmployeeDto>[] = [
     {
         accessorKey: "enrolment",
         header: "Matrícula",
+        cell: ({ row }) => {
+            return row.original.enrolment.enrolment
+        }
     },
     {
         id: "actions",

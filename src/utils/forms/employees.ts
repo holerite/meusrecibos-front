@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-
 export const employeesFilterDefaultValues = {
     matricula: "",
     nome: "",
@@ -24,18 +23,18 @@ export const employeesCreateFormDefaultValues = {
 
 export const employeesCreateSchema = z.object({
     name: z.string({
-        message: "O nome é obrigatório"
+        message: "O nome é obrigatório",
     }),
     email: z.string({
-        message: "O email é obrigatório"
+        message: "O email é obrigatório",
     }).email(
-        "Email inválido"
+        "Email inválido",
     ),
     enrolment: z.string({
-        message: "A matrícula é obrigatória"
+        message: "A matrícula é obrigatória",
     }),
     cpf: z.string({
-        message: "O CPF é obrigatório"
+        message: "O CPF é obrigatório",
     }),
+    enrolmentId: z.number().optional(),
 });
-

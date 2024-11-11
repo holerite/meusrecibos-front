@@ -49,7 +49,10 @@ export function CreateEmployeesDialog({ employee, isOpen, setIsOpen }: ICreateEm
             setIsOpen(false);
             form.reset();
         },
-        onSettled: () => queryClient.invalidateQueries({ queryKey: ['employees'] }),
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['employees'] })
+            queryClient.invalidateQueries({ queryKey: ['pendingEmployeeList'] })
+        },
         onError: (error) => {
             toast({
                 variant: "destructive",
@@ -67,6 +70,7 @@ export function CreateEmployeesDialog({ employee, isOpen, setIsOpen }: ICreateEm
     function onSubmit(values: z.infer<typeof employeesCreateSchema>) {
         mutate({
             ...values,
+            enrolmentId: employee?.enrolment.id,
             cpf: removeMask(values.cpf)
         });
     }
@@ -74,7 +78,7 @@ export function CreateEmployeesDialog({ employee, isOpen, setIsOpen }: ICreateEm
     useEffect(() => {
         if (employee) {
             form.setValue('name', employee.name)
-            form.setValue('enrolment', employee.enrolment)
+            form.setValue('enrolment', employee.enrolment.enrolment)
         }
     }, [employee])
 
