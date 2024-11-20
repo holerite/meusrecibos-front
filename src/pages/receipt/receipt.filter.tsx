@@ -35,7 +35,7 @@ export function ReceiptFilter({ form, onSubmit, filterValues, setFilterValues, i
     const [, setSearchParams] = useSearchParams()
     const { user } = useAuth();
     function numberOfFiltersApplied() {
-        return Object.values(filterValues).filter((value) => value).length;
+        return Object.values(filterValues).filter((value) => value && value !== "undefined" && value !== undefined).length;
     }
 
     return (
@@ -54,18 +54,18 @@ export function ReceiptFilter({ form, onSubmit, filterValues, setFilterValues, i
                         <div className="flex flex-col h-full w-full gap-3">
                             {user?.isAdmin && (
                                 <FormField
-                                control={form.control}
-                                name="employee"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Colaborador</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Nome do colaborador" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                    control={form.control}
+                                    name="employee"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Colaborador</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Nome do colaborador" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
                             )}
                             <FormField
                                 control={form.control}
@@ -123,8 +123,7 @@ export function ReceiptFilter({ form, onSubmit, filterValues, setFilterValues, i
                                             <FormLabel>Status</FormLabel>
                                             <Select
                                                 onValueChange={(value) => {
-                                                    if (value === "undefined") field.onChange(undefined)
-                                                    else field.onChange(value)
+                                                    field.onChange(value)
                                                 }}
                                                 value={String(field.value)}
                                             >

@@ -53,6 +53,7 @@ async function getData(data: IReceiptsFilterValues, pagination: ITablePagination
     return (await api.get<IPaymentData>("/receipt", {
         params: {
             ...data,
+            opened: data.opened === "undefined" ? undefined : data.opened,
             page: pagination.pageIndex,
             take: pagination.pageSize,
         },
@@ -65,6 +66,12 @@ async function getReceiptTypes() {
 
 async function getReceiptById(id: number) {
     return (await api.get<string>(`/receipt/file?receiptId=${id}`)).data;
+}
+
+async function openReceipt(id: number) {
+    await api.post(`/receipt/view`, {
+        receiptId: id,
+    });
 }
 
 export function Receipt() {
@@ -119,6 +126,11 @@ export function Receipt() {
         }
     });
 
+    const openReceiptMutation = useMutation({
+        mutationKey: ['openReceipt'],
+        mutationFn: openReceipt,
+    });
+
     const table = useReactTable({
         data: data?.receipts || [],
         columns,
@@ -130,7 +142,7 @@ export function Receipt() {
         manualPagination: true,
         onPaginationChange: setPagination,
         pageCount: data?.pagination?.total_pages || 1,
-        getRowId: (row) => row.id,
+        getRowId: (row) => String(row.id),
         state: {
             sorting,
             rowSelection,
@@ -148,6 +160,10 @@ export function Receipt() {
     }
 
     function onShowReceipt(id: number) {
+        const receipt = data?.receipts.find(receipt => receipt.id === id);
+        if(!user?.isAdmin && !receipt?.opened) {
+            openReceiptMutation.mutate(id);
+        }
         setShowReceiptDialogOpen(true);
         receiptMutation.mutate(id)
     }

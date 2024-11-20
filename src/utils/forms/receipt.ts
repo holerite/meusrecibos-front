@@ -7,7 +7,7 @@ export const receiptsFilterDefaultValues = {
     paydayFrom: undefined,
     paydayTo: undefined,
     validity: "",
-    opened: undefined,
+    opened: "undefined",
 };
 
 //usado no form
@@ -19,7 +19,7 @@ export const receiptsFilterFormDefaultValues = {
         to: undefined,
     },
     validity: "",
-    opened: undefined,
+    opened: "undefined",
 };
 
 export const receiptsFilterSchema = z.object({
@@ -32,7 +32,7 @@ export const receiptsFilterSchema = z.object({
         })
         .optional(),
     validity: z.string(),
-    opened: z.string().or(z.undefined()),
+    opened: z.string().optional(),
 });
 
 export const receiptsCreateDefaultValues = {

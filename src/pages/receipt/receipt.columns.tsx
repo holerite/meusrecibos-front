@@ -8,7 +8,7 @@ import { MoreVerticalIcon } from "lucide-react"
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type PaymentDTO = {
-    id: string
+    id: number
     name: string
     ReceiptsTypes: {
         name: string
@@ -70,6 +70,11 @@ export const columns: ColumnDef<PaymentDTO>[] = [
         cell: ({ row }) => formatDate(new Date(row.original.validity), 'MM/yyyy'),
     },
     {
+        accessorKey: "status",
+        header: "Visto",
+        cell: ({ row }) => row.original.opened ? "Sim" : "Não",
+    },
+    {
         accessorKey: "opened",
         header: "Ações",
         cell: ({ table, row }) => {
@@ -77,9 +82,9 @@ export const columns: ColumnDef<PaymentDTO>[] = [
                 (table.options.meta as any)?.onShowReceipt(row.original.id)
             }
 
-            const handlePrint = () => {
-                (table.options.meta as any)?.onPrint([row.original.id])
-            }
+            // const handlePrint = () => {
+            //     (table.options.meta as any)?.onPrint([row.original.id])
+            // }
 
             return (
                 <DropdownMenu>
@@ -96,11 +101,11 @@ export const columns: ColumnDef<PaymentDTO>[] = [
                         >
                             Visualizar recibo
                         </DropdownMenuItem>
-                        <DropdownMenuItem
+                        {/* <DropdownMenuItem
                             onClick={handlePrint}
                         >
                             Imprimir comprovante
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                     </DropdownMenuContent>
                 </DropdownMenu>
             )
