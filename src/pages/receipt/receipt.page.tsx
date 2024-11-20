@@ -32,6 +32,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
 import { Loader2Icon } from "lucide-react";
 import { PendingEmployeeDialog } from "./pending-employee.modal";
+import { ImportReceiptErrorDialog } from "./import-receipt-error.modal";
 
 
 interface IPaymentData {
@@ -46,6 +47,11 @@ export interface IReceiptsFilterValues {
     paydayTo?: string
     validity: string
     opened?: string
+}
+
+export interface IImportReceiptErrorDialogValues {
+    name: string
+    pages: number[]
 }
 
 
@@ -82,6 +88,9 @@ export function Receipt() {
 
     const [printOpenDialog, setOpenPrintDialog] = useState(false);
     const [pendingEmployeeDialogOpen, setPendingEmployeeDialogOpen] = useState(false);
+
+    const [importReceiptErrorDialogOpen, setImportReceiptErrorDialogOpen] = useState(false);
+    const [importReceiptErrorDialogErrors, setImportReceiptErrorDialogErrors] = useState<IImportReceiptErrorDialogValues[]>([]);
 
     const [showReceiptDialogOpen, setShowReceiptDialogOpen] = useState(false);
     const [showReceiptSrc, setShowReceiptSrc] = useState<string>("");
@@ -211,6 +220,8 @@ export function Receipt() {
                         <ImportReceiptDialog
                             receiptTypes={receiptQuery.data || []}
                             setPendingEmployeeDialogOpen={setPendingEmployeeDialogOpen}
+                            setImportReceiptErrorDialogOpen={setImportReceiptErrorDialogOpen}
+                            setImportReceiptErrorDialogErrors={setImportReceiptErrorDialogErrors}
                         />
                     )}
                 </div>
@@ -259,6 +270,13 @@ export function Receipt() {
                 isOpen={pendingEmployeeDialogOpen}
                 setIsOpen={setPendingEmployeeDialogOpen}
             />
+
+            <ImportReceiptErrorDialog
+                isOpen={importReceiptErrorDialogOpen}
+                setIsOpen={setImportReceiptErrorDialogOpen}
+                errors={importReceiptErrorDialogErrors}
+            />
         </>
+
     );
 }

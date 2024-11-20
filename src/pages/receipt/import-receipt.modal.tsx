@@ -38,10 +38,13 @@ import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { IImportReceiptErrorDialogValues } from "./receipt.page";
 
 interface IImportReceiptDialogProps {
     receiptTypes: IReceiptType[]
     setPendingEmployeeDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setImportReceiptErrorDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    setImportReceiptErrorDialogErrors: React.Dispatch<React.SetStateAction<IImportReceiptErrorDialogValues[]>>;
 }
 
 async function importReceipt(data: z.infer<typeof receiptsCreateSchema>) {
@@ -56,7 +59,7 @@ async function importReceipt(data: z.infer<typeof receiptsCreateSchema>) {
     return (await api.post('/receipt', formData)).data;
 }
 
-export function ImportReceiptDialog({ receiptTypes, setPendingEmployeeDialogOpen }: IImportReceiptDialogProps) {
+export function ImportReceiptDialog({ receiptTypes, setPendingEmployeeDialogOpen, setImportReceiptErrorDialogOpen, setImportReceiptErrorDialogErrors }: IImportReceiptDialogProps) {
     const [isOpen, setIsOpen] = useState(false);
     const { mutate, isPending } = useMutation({
         mutationKey: ['importReceipt'],
@@ -68,6 +71,10 @@ export function ImportReceiptDialog({ receiptTypes, setPendingEmployeeDialogOpen
             setIsOpen(false);
             if (response.pendingEmployees) {
                 setPendingEmployeeDialogOpen(true);
+            }
+            if (response.errorPages.length > 0) {
+                setImportReceiptErrorDialogErrors(response.errorPages);
+                setImportReceiptErrorDialogOpen(true);
             }
             form.reset();
         },
