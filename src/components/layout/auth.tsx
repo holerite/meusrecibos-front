@@ -16,14 +16,14 @@ export function AuthLayout({ children, title, description }: IAuthLayoutProps) {
 
 	return (
 		<div className="w-screen h-screen flex items-center justify-center relative">
-			<div className="flex flex-col gap-4 max-w-sm w-full">
+			<div className="flex flex-col gap-4 max-w-sm w-full px-4">
 				{(pathname === "/" || pathname === "/employees") && (
 					<Tabs
 						defaultValue={pathname}
 						onValueChange={(tab) => {
 							navigate(tab);
 						}}
-						className="w-full mx-4"
+						className="w-full"
 					>
 						<TabsList className="w-full">
 							<TabsTrigger className="w-full" value="/">
@@ -35,7 +35,7 @@ export function AuthLayout({ children, title, description }: IAuthLayoutProps) {
 						</TabsList>
 					</Tabs>
 				)}
-				<Card className="shadow-none border-none max-w-sm w-full bg-none mx-4">
+				<Card className="shadow-none border-none max-w-sm w-full bg-none">
 					<CardTitle className="text-xl">{title}</CardTitle>
 					<CardDescription>{description}</CardDescription>
 					<CardContent className="p-0 mt-4">{children}</CardContent>

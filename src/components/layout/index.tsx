@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom"
 import {
     Menu,
-    Package2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -39,8 +38,10 @@ export function Layout({ children }: LayoutProps) {
                     <div className="flex h-full max-h-screen flex-col gap-2">
                         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
                             <Link to="/" className="flex items-center gap-2 font-semibold">
-                                <Package2 className="h-6 w-6" />
-                                <span className="">meusrecibos Inc</span>
+                                <div className="bg-white flex items-center justify-center p-1 rounded-sm">
+                                    <img src="/android-chrome-192x192.png" className="w-6 h-6" alt="Logo do sistema" />
+                                </div>
+                                <span className="">Meus Recibos</span>
                             </Link>
                         </div>
                         <div className="flex-1">
