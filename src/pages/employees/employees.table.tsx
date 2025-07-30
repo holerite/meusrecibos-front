@@ -28,9 +28,8 @@ interface DataTableProps<TData, TValue> {
     setPagination: React.Dispatch<React.SetStateAction<ITablePagination>>
     pageCount: number
     totalRecords: number
+    handleDelete: (id: TValue) => void
 }
-
-
 
 export function DataTable<TData, TValue>({
     columns,
@@ -39,7 +38,8 @@ export function DataTable<TData, TValue>({
     pagination,
     setPagination,
     pageCount,
-    totalRecords
+    totalRecords,
+    handleDelete
 }: DataTableProps<TData, TValue>) {
     const table = useReactTable({
         data: data || [],
@@ -50,6 +50,11 @@ export function DataTable<TData, TValue>({
         pageCount: pageCount,
         state: {
             pagination,
+        },
+        meta: {
+            onDelete(id: TValue) {
+                handleDelete(id);
+            }
         }
     })
 

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { cpfMask } from "@/utils/masks"
 import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, } from "lucide-react"
+import { ArrowUpDown, Trash2Icon, } from "lucide-react"
 import { Link } from "react-router-dom"
 
 // This type is used to define the shape of our data.
@@ -56,6 +56,26 @@ export const columns: ColumnDef<EmployeesDto>[] = [
             </Link>
         }
     },
+    {
+        id: "actions",
+        header: "Ações",
+        enableHiding: false,
+        cell: ({ table, row }) => {
+            const handleDelete = () => {
+                (table.options.meta as any)?.onDelete(row.original.id)
+            }
 
-
+            return (
+                <Button
+                    size={"icon"}
+                    variant={"destructive"}
+                    onClick={handleDelete}
+                >
+                    <Trash2Icon
+                        className="w-4 h-4"
+                    />
+                </Button>
+            )
+        },
+    }
 ]

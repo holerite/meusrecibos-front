@@ -124,7 +124,13 @@ export function Receipt() {
         mutationKey: ['showReceipt'],
         mutationFn: getReceiptById,
         onSuccess: (data) => {
-            setShowReceiptSrc(data);
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (isMobile) {
+                window.open(data, '_blank');
+                setShowReceiptDialogOpen(false);
+            } else {
+                setShowReceiptSrc(data);
+            }
         },
         onError: (error) => {
             toast({
