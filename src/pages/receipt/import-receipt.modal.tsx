@@ -72,7 +72,7 @@ export function ImportReceiptDialog({ receiptTypes, setPendingEmployeeDialogOpen
             if (response.pendingEmployees) {
                 setPendingEmployeeDialogOpen(true);
             }
-            if (response.errorPages.length > 0) {
+            if (response.errorPages > 0) {
                 setImportReceiptErrorDialogErrors(response.errorPages);
                 setImportReceiptErrorDialogOpen(true);
             }
